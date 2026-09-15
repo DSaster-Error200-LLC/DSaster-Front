@@ -1,0 +1,14 @@
+{
+  "editor.rulers": [80, 120],
+  "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
+  "editor.formatOnSave": true,
+  "eslint.rules.customizations": [{ "rule": "*", "severity": "warn" }],
+  "files.insertFinalNewline": true,
+  "files.exclude": {
+    ".vs/": true,
+    ".next/": true,
+    "node_modules/": true,
+    ".scannerwork/": true
+  },
+  "sonarlint.disableTelemetry": true
+}
