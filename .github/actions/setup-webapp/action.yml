@@ -1,0 +1,12 @@
+name: Setup WebApp
+
+description: Install pnpm, set up Node.js, and install the dependencies
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/setup@v2.1.0
+      with:
+        working-directory: src/dsaster-front
+        cache: true
+        require-lockfile: true
