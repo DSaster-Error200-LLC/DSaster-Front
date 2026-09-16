@@ -1,0 +1,45 @@
+name: WebApp PR Validation
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - 'src/dsaster-front/**'
+      - ".github/workflows/webapp-pr.yml"
+      - ".github/actions/setup-webapp/**"
+  workflow_dispatch:
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'src/dsaster-front'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup-webapp
+
+      - name: Lint
+        id: lint
+        run: pnpm lint
+
+      - name: Check formatting
+        id: format
+        run: pnpm format:check
+
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'src/dsaster-front'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup-webapp
+
+      - name: Build
+        run: pnpm build
+
+      - name: Test
+        run: pnpm test
