@@ -21,11 +21,9 @@ jobs:
       - uses: ./.github/actions/setup-webapp
 
       - name: Lint
-        id: lint
         run: pnpm lint
 
       - name: Check formatting
-        id: format
         run: pnpm format:check
 
   test:
