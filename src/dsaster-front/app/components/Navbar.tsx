@@ -12,16 +12,16 @@ export default function Navbar() {
     <header className="border-b border-brand-border bg-white">
       <nav className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
         <div className="flex items-center gap-3">
-        <Image
-          src="/logo.svg"
-          alt="TicketDsaster Logo"
-          width={36}
-          height={36}
-          className="h-9 w-9"
-        />
-        <h2 className="font-display text-lg font-bold tracking-tight text-brand-ink">
-          TicketDsaster
-        </h2>
+          <Image
+            src="/logo.svg"
+            alt="TicketDsaster Logo"
+            width={36}
+            height={36}
+            className="h-9 w-9"
+          />
+          <h2 className="font-display text-lg font-bold tracking-tight text-brand-ink">
+            TicketDsaster
+          </h2>
         </div>
         <div className="hidden items-center gap-8 md:flex">
           <a

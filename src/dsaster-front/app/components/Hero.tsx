@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 
 export default function Hero() {
@@ -11,8 +13,7 @@ export default function Hero() {
 
       <p className="mx-auto mt-6 max-w-xl text-base text-brand-muted sm:text-lg">
         Descubre los mejores conciertos, festivales, teatro y deportes con
-        compra protegida, precios transparentes y acceso inmediato en tu
-        móvil.
+        compra protegida, precios transparentes y acceso inmediato en tu móvil.
       </p>
 
       <form className="mx-auto mt-10 flex max-w-xl flex-col gap-3 rounded-2xl bg-white p-3 shadow-[0_20px_45px_-25px_rgba(27,27,42,0.35)] sm:flex-row sm:items-center">
@@ -34,6 +35,10 @@ export default function Hero() {
         <button
           type="submit"
           className="flex items-center justify-center gap-2 rounded-xl bg-brand-rust px-6 py-3 font-display text-sm font-semibold text-white transition-colors hover:bg-brand-rust-dark"
+          onClick={(e) => {
+            e.preventDefault();
+            alert("¡Función de búsqueda por implementar!");
+          }}
         >
           <svg
             className="h-4 w-4"
