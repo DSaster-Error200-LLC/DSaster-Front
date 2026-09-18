@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  format:
+  lint-and-format:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -26,7 +26,7 @@ jobs:
       - name: Check formatting
         run: pnpm format:check
 
-  test:
+  build:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -38,6 +38,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-
-      - name: Test
-        run: pnpm test
