@@ -19,7 +19,7 @@ export default defineConfig([
       eslint.configs.recommended,
       tseslint.configs.recommendedTypeChecked,
       tseslint.configs.stylisticTypeChecked,
-      // @ts-expect-error known eslint-config-next typing issue
+      // @ts-expect-error type issue
       sonarjs.configs.recommended,
       nextVitals,
       nextTs,
