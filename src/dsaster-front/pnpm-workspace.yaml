@@ -1,6 +1,7 @@
 minimumReleaseAgeStrict: true
 trustPolicy: no-downgrade
 allowBuilds:
+  esbuild: true
   sharp: false
   unrs-resolver: false
 trustPolicyExclude:

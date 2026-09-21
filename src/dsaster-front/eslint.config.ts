@@ -13,6 +13,7 @@ export default defineConfig([
     "build/**",
     "next-env.d.ts",
     "postcss.config.mjs",
+    "api/**",
   ]),
   {
     extends: [
