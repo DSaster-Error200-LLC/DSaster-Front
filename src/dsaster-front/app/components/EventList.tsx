@@ -1,4 +1,4 @@
-import { Event } from "@/app/types/event";
+import { Event } from "@/api/search";
 import EventRow from "@/app/components/EventRow";
 
 interface EventListProps {

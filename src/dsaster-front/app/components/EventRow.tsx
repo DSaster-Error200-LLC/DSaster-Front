@@ -1,22 +1,13 @@
-import { Event } from "@/app/types/event";
+import Link from "next/link";
+import { Event } from "@/api/search";
+import { formatEventDate } from "@/app/lib/date";
 
 interface EventRowProps {
   readonly event: Event;
 }
 
 export default function EventRow({ event }: Readonly<EventRowProps>) {
-  const day = event.date.toLocaleDateString("es-ES", {
-    day: "2-digit",
-    timeZone: "UTC",
-  });
-  const month = event.date
-    .toLocaleDateString("es-ES", { month: "short", timeZone: "UTC" })
-    .replace(".", "");
-  const time = event.date.toLocaleTimeString("es-ES", {
-    hour: "2-digit",
-    minute: "2-digit",
-    timeZone: "UTC",
-  });
+  const { day, month, time } = formatEventDate(event.date);
 
   return (
     <article className="group relative flex flex-col items-start gap-4 py-6 transition-colors hover:bg-brand-rust/5 sm:flex-row sm:items-center sm:gap-8 sm:rounded-xl sm:px-4 sm:py-8">
@@ -34,7 +25,12 @@ export default function EventRow({ event }: Readonly<EventRowProps>) {
       {/* Event Details */}
       <div className="min-w-0 flex-1">
         <h3 className="font-display text-xl font-bold tracking-tight text-brand-ink transition-colors group-hover:text-brand-rust sm:text-2xl">
-          {event.name}
+          <Link
+            href={`/events/${event.id}`}
+            className="focus:outline-none focus:underline after:absolute after:inset-0"
+          >
+            {event.name}
+          </Link>
         </h3>
         <p className="mt-0.5 text-base text-brand-muted">{event.artist}</p>
       </div>
@@ -42,12 +38,9 @@ export default function EventRow({ event }: Readonly<EventRowProps>) {
       {/* Venue & Action */}
       <div className="flex w-full shrink-0 items-center justify-between gap-4 pt-2 sm:w-auto sm:flex-col sm:items-end sm:pt-0">
         <span className="text-sm font-medium text-brand-ink/90 sm:text-right">
-          {event.venue}
+          {event.venue.name}
         </span>
-        <span
-          aria-hidden="true"
-          className="inline-flex items-center gap-1 text-sm font-semibold text-brand-rust opacity-0 transition-opacity group-hover:opacity-100 sm:mt-1"
-        >
+        <span className="inline-flex items-center gap-1 text-sm font-semibold text-brand-rust opacity-0 transition-opacity group-hover:opacity-100 sm:mt-1">
           Entradas
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path
