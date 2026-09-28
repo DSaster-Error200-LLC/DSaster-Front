@@ -1,6 +1,6 @@
 import { defineConfig } from "orval";
 
-const searchCommit = "650b15eedc243e834b771d18d2a79b37dfa9023d";
+const searchCommit = "5bf069d4ba5c5534722738ea158019b16b21d951";
 
 export default defineConfig({
   search: {

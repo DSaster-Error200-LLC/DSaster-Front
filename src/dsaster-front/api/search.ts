@@ -10,17 +10,17 @@ import type {
   AxiosResponse
 } from 'axios';
 
-export interface Venue {
-  name: string;
-  location: string;
-}
-
-export interface Event {
+export interface EventPreview {
+  /** Identifier the event was registered with */
   id: string;
+  /** Event name */
   name: string;
+  /** Performing artist */
   artist: string;
+  /** Date and time of the event, in ISO 8601 */
   date: string;
-  venue: Venue;
+  /** Name of the venue hosting the event */
+  venueName: string;
 }
 
 export interface RegisterVenueRequest {
@@ -35,13 +35,33 @@ export interface RegisterEventRequest {
   venue: RegisterVenueRequest;
 }
 
+export interface Venue {
+  name: string;
+  location: string;
+}
+
+export interface Event {
+  id: string;
+  name: string;
+  artist: string;
+  date: string;
+  venue: Venue;
+}
+
 export type EventsControllerFindParams = {
+/**
+ * Text to look for in the event name. The match is case-insensitive, ignores leading and trailing spaces, and succeeds when the event name contains the text
+ */
 name: string;
 };
 
+/**
+ * Returns a preview of every registered event whose name contains the given text, in registration order.
+ * @summary Search registered events by name
+ */
 export const eventsControllerFind = (
     params: EventsControllerFindParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Event[]>> => {
+ ): Promise<AxiosResponse<EventPreview[]>> => {
     return axios.get(
       `/events`,{
     ...options,
@@ -86,5 +106,29 @@ export const getEventsControllerRegisterUrl = (eventId: string,) => {
   });
 }
 
-export type EventsControllerFindResult = AxiosResponse<Event[]>
+/**
+ * @summary Get event details by ID
+ */
+export const eventsControllerGetDetails = (
+    eventId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<Event>> => {
+    return axios.get(
+      `/events/${eventId}`,options
+    );
+  }
+export const getEventsControllerGetDetailsUrl = (eventId: string,) => {
+
+  return axios.create({
+    baseURL: '',
+    params: null,
+  }).getUri({
+    url: `/events/${eventId}`,
+    baseURL: '',
+
+
+  });
+}
+
+export type EventsControllerFindResult = AxiosResponse<EventPreview[]>
 export type EventsControllerRegisterResult = AxiosResponse<Event>
+export type EventsControllerGetDetailsResult = AxiosResponse<Event>
