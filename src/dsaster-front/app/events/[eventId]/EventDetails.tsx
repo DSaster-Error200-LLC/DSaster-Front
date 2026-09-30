@@ -74,13 +74,12 @@ export default function EventDetails({ event }: Readonly<EventDetailsProps>) {
         </section>
 
         <section className="flex items-start sm:justify-end">
-          <button
-            type="button"
-            className="w-full rounded-xl bg-brand-rust px-8 py-4 font-display text-base font-semibold text-white transition-colors hover:bg-brand-rust-dark sm:w-auto"
-            disabled
+          <Link
+            href={`/events/${event.id}/purchase`}
+            className="w-full rounded-xl bg-brand-rust px-8 py-4 text-center font-display text-base font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust sm:max-w-sm"
           >
             Comprar Ticket
-          </button>
+          </Link>
         </section>
       </div>
     </article>

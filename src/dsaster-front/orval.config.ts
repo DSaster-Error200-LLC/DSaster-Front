@@ -3,6 +3,15 @@ import { defineConfig } from "orval";
 const searchCommit = "5bf069d4ba5c5534722738ea158019b16b21d951";
 
 export default defineConfig({
+  booking: {
+    input: {
+      target: "./openapi/booking.json",
+    },
+    output: {
+      target: "./api/booking.ts",
+      httpClient: "axios",
+    },
+  },
   search: {
     input: {
       target:
