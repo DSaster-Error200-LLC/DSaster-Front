@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { postEventsEventIdTickets } from "@/api/booking";
+import { purchaseTicket } from "@/app/lib/purchase-ticket";
 
 interface PurchaseFormProps {
   readonly eventId: string;
@@ -53,16 +53,12 @@ export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
     }
 
     setStatus("pending");
-    try {
-      await postEventsEventIdTickets(eventId, {
-        eventId,
-        fullName: fullName.value,
-        email: email.value,
-      });
-      setStatus("success");
-    } catch {
-      setStatus("error");
-    }
+    const purchased = await purchaseTicket(
+      eventId,
+      fullName.value,
+      email.value,
+    );
+    setStatus(purchased ? "success" : "error");
   }
 
   const fields = [
