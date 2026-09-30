@@ -11,13 +11,13 @@ const nextConfig: NextConfig = {
     const booking = stripTrailingSlashes(process.env.BOOKING_API_URL);
     const search = stripTrailingSlashes(process.env.SEARCH_API_URL);
 
-    if (!booking || !search) {
-      throw new Error("BOOKING_API_URL and SEARCH_API_URL must be set.");
-    }
-
     return [
-      { source: "/api/booking/:path*", destination: `${booking}/:path*` },
-      { source: "/api/search/:path*", destination: `${search}/:path*` },
+      ...(booking
+        ? [{ source: "/api/booking/:path*", destination: `${booking}/:path*` }]
+        : []),
+      ...(search
+        ? [{ source: "/api/search/:path*", destination: `${search}/:path*` }]
+        : []),
     ];
   },
 };
