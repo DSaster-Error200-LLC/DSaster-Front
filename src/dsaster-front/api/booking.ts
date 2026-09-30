@@ -5,12 +5,7 @@
  * Backend API responsible for ticket purchasing, idempotency handling, and issuance (MVP-02).
  * OpenAPI spec version: v1-commit-cf0898eb792920a40079504d353f4bcc987cf0fa
  */
-import axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
+import { bookingInstance } from '../app/lib/api-mutator';
 export interface PurchaseTicketCommand {
   eventId?: string;
   ticketId?: string;
@@ -21,89 +16,49 @@ export interface PurchaseTicketCommand {
   idempotencyKey?: string;
 }
 
-export const getTestError = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.get(
-      `/test/error`,options
-    );
-  }
-export const getGetTestErrorUrl = () => {
-
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/test/error`,
-    baseURL: '',
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  });
-}
+  export const getTestError = (
+
+ options?: SecondParameter<typeof bookingInstance<void>>,) => {
+      return bookingInstance<void>(
+      {url: `/test/error`, method: 'GET'
+    },
+      options);
+    }
 
 export const get = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.get(
-      `/`,options
-    );
-  }
-export const getGetUrl = () => {
 
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/`,
-    baseURL: '',
-
-
-  });
-}
+ options?: SecondParameter<typeof bookingInstance<void>>,) => {
+      return bookingInstance<void>(
+      {url: `/`, method: 'GET'
+    },
+      options);
+    }
 
 export const getHealth = (
-     options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.get(
-      `/health`,options
-    );
-  }
-export const getGetHealthUrl = () => {
 
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/health`,
-    baseURL: '',
-
-
-  });
-}
+ options?: SecondParameter<typeof bookingInstance<void>>,) => {
+      return bookingInstance<void>(
+      {url: `/health`, method: 'GET'
+    },
+      options);
+    }
 
 export const postEventsEventIdTickets = (
     eventId: string,
-    purchaseTicketCommand: PurchaseTicketCommand, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    return axios.post(
-      `/events/${eventId}/tickets`,
-      purchaseTicketCommand,options
-    );
-  }
-export const getPostEventsEventIdTicketsUrl = (eventId: string,) => {
+    purchaseTicketCommand: PurchaseTicketCommand,
+ options?: SecondParameter<typeof bookingInstance<void>>,) => {
+      return bookingInstance<void>(
+      {url: `/events/${eventId}/tickets`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: purchaseTicketCommand
+    },
+      options);
+    }
 
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/events/${eventId}/tickets`,
-    baseURL: '',
-
-
-  });
-}
-
-export type GetTestErrorResult = AxiosResponse<void>
-export type GetResult = AxiosResponse<void>
-export type GetHealthResult = AxiosResponse<void>
-export type PostEventsEventIdTicketsResult = AxiosResponse<void>
+export type GetTestErrorResult = NonNullable<Awaited<ReturnType<typeof getTestError>>>
+export type GetResult = NonNullable<Awaited<ReturnType<typeof get>>>
+export type GetHealthResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
+export type PostEventsEventIdTicketsResult = NonNullable<Awaited<ReturnType<typeof postEventsEventIdTickets>>>

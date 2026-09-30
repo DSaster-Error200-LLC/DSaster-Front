@@ -10,6 +10,12 @@ export default defineConfig({
     output: {
       target: "./api/booking.ts",
       httpClient: "axios",
+      override: {
+        mutator: {
+          path: "./app/lib/api-mutator.ts",
+          name: "bookingInstance",
+        },
+      },
     },
   },
   search: {
@@ -22,6 +28,12 @@ export default defineConfig({
     output: {
       target: "./api/search.ts",
       httpClient: "axios",
+      override: {
+        mutator: {
+          path: "./app/lib/api-mutator.ts",
+          name: "searchInstance",
+        },
+      },
     },
   },
 });

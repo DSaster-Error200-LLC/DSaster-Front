@@ -4,12 +4,7 @@
  * DSaster-Search
  * OpenAPI spec version: 0.0.1
  */
-import axios from 'axios';
-import type {
-  AxiosRequestConfig,
-  AxiosResponse
-} from 'axios';
-
+import { searchInstance } from '../app/lib/api-mutator';
 export interface EventPreview {
   /** Identifier the event was registered with */
   id: string;
@@ -55,80 +50,50 @@ export type EventsControllerFindParams = {
 name: string;
 };
 
-/**
+type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
+
+
+  /**
  * Returns a preview of every registered event whose name contains the given text, in registration order.
  * @summary Search registered events by name
  */
 export const eventsControllerFind = (
-    params: EventsControllerFindParams, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<EventPreview[]>> => {
-    return axios.get(
-      `/events`,{
-    ...options,
-        params: {...params, ...options?.params},}
-    );
-  }
-export const getEventsControllerFindUrl = (params: EventsControllerFindParams,) => {
-
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/events`,
-    baseURL: '',
-    params,
-
-  });
-}
+    params: EventsControllerFindParams,
+ options?: SecondParameter<typeof searchInstance<EventPreview[]>>,) => {
+      return searchInstance<EventPreview[]>(
+      {url: `/events`, method: 'GET',
+        params
+    },
+      options);
+    }
 
 /**
  * @summary Register an event so it appears in search results
  */
 export const eventsControllerRegister = (
     eventId: string,
-    registerEventRequest: RegisterEventRequest, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Event>> => {
-    return axios.post(
-      `/events/${eventId}`,
-      registerEventRequest,options
-    );
-  }
-export const getEventsControllerRegisterUrl = (eventId: string,) => {
-
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/events/${eventId}`,
-    baseURL: '',
-
-
-  });
-}
+    registerEventRequest: RegisterEventRequest,
+ options?: SecondParameter<typeof searchInstance<Event>>,) => {
+      return searchInstance<Event>(
+      {url: `/events/${eventId}`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: registerEventRequest
+    },
+      options);
+    }
 
 /**
  * @summary Get event details by ID
  */
 export const eventsControllerGetDetails = (
-    eventId: string, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<Event>> => {
-    return axios.get(
-      `/events/${eventId}`,options
-    );
-  }
-export const getEventsControllerGetDetailsUrl = (eventId: string,) => {
+    eventId: string,
+ options?: SecondParameter<typeof searchInstance<Event>>,) => {
+      return searchInstance<Event>(
+      {url: `/events/${eventId}`, method: 'GET'
+    },
+      options);
+    }
 
-  return axios.create({
-    baseURL: '',
-    params: null,
-  }).getUri({
-    url: `/events/${eventId}`,
-    baseURL: '',
-
-
-  });
-}
-
-export type EventsControllerFindResult = AxiosResponse<EventPreview[]>
-export type EventsControllerRegisterResult = AxiosResponse<Event>
-export type EventsControllerGetDetailsResult = AxiosResponse<Event>
+export type EventsControllerFindResult = NonNullable<Awaited<ReturnType<typeof eventsControllerFind>>>
+export type EventsControllerRegisterResult = NonNullable<Awaited<ReturnType<typeof eventsControllerRegister>>>
+export type EventsControllerGetDetailsResult = NonNullable<Awaited<ReturnType<typeof eventsControllerGetDetails>>>

@@ -54,14 +54,11 @@ export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
 
     setStatus("pending");
     try {
-      const baseURL = process.env.NEXT_PUBLIC_BOOKING_API_URL?.trim();
-      if (!baseURL) throw new Error("BookingService URL is not configured.");
-
-      await postEventsEventIdTickets(
+      await postEventsEventIdTickets(eventId, {
         eventId,
-        { eventId, fullName: fullName.value, email: email.value },
-        { baseURL },
-      );
+        fullName: fullName.value,
+        email: email.value,
+      });
       setStatus("success");
     } catch {
       setStatus("error");
