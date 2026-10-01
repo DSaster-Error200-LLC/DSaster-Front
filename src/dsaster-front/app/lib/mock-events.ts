@@ -2,7 +2,7 @@ import { Event } from "@/api/search";
 
 export const mockEvents: readonly Event[] = [
   {
-    id: "1",
+    id: "11111111-1111-1111-1111-111111111111",
     name: "Gira Mundial 2026",
     artist: "Rosalía",
     date: "2026-10-15T21:00:00Z",
@@ -12,7 +12,7 @@ export const mockEvents: readonly Event[] = [
     },
   },
   {
-    id: "2",
+    id: "11111111-1111-1111-1111-111111111112",
     name: "The Eras Tour",
     artist: "Taylor Swift",
     date: "2026-11-20T19:30:00Z",
@@ -22,7 +22,7 @@ export const mockEvents: readonly Event[] = [
     },
   },
   {
-    id: "3",
+    id: "11111111-1111-1111-1111-111111111113",
     name: "Concierto Acústico",
     artist: "C. Tangana",
     date: "2026-12-05T20:00:00Z",
