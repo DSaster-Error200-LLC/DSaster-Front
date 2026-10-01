@@ -6,9 +6,10 @@ export async function purchaseTicket(
   email: string,
 ): Promise<boolean> {
   try {
-    await postEventsEventIdTickets(eventId, { eventId, fullName, email });
+    await postEventsEventIdTickets(eventId, { fullName, email });
     return true;
-  } catch {
+  } catch (exception) {
+    console.log(exception);
     return false;
   }
 }
