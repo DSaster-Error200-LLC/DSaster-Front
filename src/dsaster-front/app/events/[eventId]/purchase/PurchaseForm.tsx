@@ -1,65 +1,24 @@
 "use client";
 
-import { useId, useRef, useState } from "react";
-import { purchaseTicket } from "@/app/lib/purchase-ticket";
+import { useId } from "react";
+import { PurchaseError, PurchaseFormField, PurchaseSubmitButton, PurchaseSuccess } from "./components";
+import { usePurchase } from "./hooks/usePurchase";
 
 interface PurchaseFormProps {
   readonly eventId: string;
 }
 
-function fieldError(input: HTMLInputElement): string {
-  if (!input.value.trim()) {
-    return input.name === "fullName"
-      ? "Introduce tu nombre completo."
-      : "Introduce tu correo electrónico.";
-  }
-
-  return input.validity.typeMismatch
-    ? "Introduce un correo electrónico válido."
-    : "";
-}
-
-const buttonClassName =
-  "w-full rounded-xl bg-brand-rust px-8 py-4 font-display text-base font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust disabled:cursor-wait disabled:opacity-60";
-
 export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
   const id = useId();
-  const fullNameRef = useRef<HTMLInputElement>(null);
-  const emailRef = useRef<HTMLInputElement>(null);
-  const [status, setStatus] = useState<
-    "idle" | "pending" | "success" | "error"
-  >("idle");
-  const [errors, setErrors] = useState({ fullName: "", email: "" });
-
-  async function purchase() {
-    const fullName = fullNameRef.current;
-    const email = emailRef.current;
-    if (!fullName || !email || status === "pending" || status === "success") {
-      return;
-    }
-
-    fullName.value = fullName.value.trim();
-    email.value = email.value.trim();
-    const nextErrors = {
-      fullName: fieldError(fullName),
-      email: fieldError(email),
-    };
-    setErrors(nextErrors);
-    setStatus("idle");
-
-    if (nextErrors.fullName || nextErrors.email) {
-      (nextErrors.fullName ? fullName : email).focus();
-      return;
-    }
-
-    setStatus("pending");
-    const purchased = await purchaseTicket(
-      eventId,
-      fullName.value,
-      email.value,
-    );
-    setStatus(purchased ? "success" : "error");
-  }
+  const {
+    fullNameRef,
+    emailRef,
+    status,
+    errors,
+    hasError,
+    purchase,
+    handleInputChange,
+  } = usePurchase(eventId);
 
   const fields = [
     {
@@ -99,67 +58,29 @@ export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
           </h2>
 
           {fields.map(({ name, label, type, autoComplete, ref }) => (
-            <div key={name}>
-              <label
-                htmlFor={`${id}-${name}`}
-                className="mb-2 block text-sm font-medium text-brand-ink"
-              >
-                {label}
-              </label>
-              <input
-                ref={ref}
-                id={`${id}-${name}`}
-                name={name}
-                type={type}
-                autoComplete={autoComplete}
-                required
-                disabled={status === "pending"}
-                aria-invalid={Boolean(errors[name])}
-                aria-describedby={
-                  errors[name] ? `${id}-${name}-error` : undefined
-                }
-                className="w-full rounded-lg border border-brand-muted bg-white px-4 py-3 text-brand-ink outline-offset-2 focus-visible:outline-2 focus-visible:outline-brand-rust disabled:opacity-60 aria-invalid:border-brand-maroon"
-                onChange={(event) => {
-                  if (errors[name]) {
-                    const message = fieldError(event.currentTarget);
-                    setErrors((previous) => ({ ...previous, [name]: message }));
-                  }
-                }}
-              />
-              {errors[name] && (
-                <p
-                  id={`${id}-${name}-error`}
-                  className="mt-2 text-sm text-brand-maroon"
-                  aria-live="polite"
-                >
-                  {errors[name]}
-                </p>
-              )}
-            </div>
+            <PurchaseFormField
+              key={name}
+              id={id}
+              name={name}
+              label={label}
+              type={type}
+              autoComplete={autoComplete}
+              inputRef={ref}
+              disabled={status === "pending"}
+              error={errors[name]}
+              onChange={(event) =>
+                handleInputChange(name, event.currentTarget)
+              }
+            />
           ))}
 
-          {status === "error" && (
-            <p role="alert" className="text-sm text-brand-maroon">
-              No se pudo completar la compra. Inténtalo de nuevo.
-            </p>
-          )}
+          <PurchaseError hasError={hasError} />
 
-          <button
-            type="submit"
-            disabled={status === "pending"}
-            className={buttonClassName}
-          >
-            {status === "pending" ? "Comprando…" : "Comprar Ticket"}
-          </button>
+          <PurchaseSubmitButton isPending={status === "pending"} />
         </form>
       )}
 
-      <p
-        role="status"
-        className="font-display text-lg font-semibold text-brand-ink"
-      >
-        {status === "success" ? "Tu compra se ha completado." : ""}
-      </p>
+      <PurchaseSuccess isSuccess={status === "success"} />
     </div>
   );
 }
