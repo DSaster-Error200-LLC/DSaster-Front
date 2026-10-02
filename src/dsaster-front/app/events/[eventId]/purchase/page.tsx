@@ -40,7 +40,7 @@ export default async function PurchasePage({
         >
           <h2
             id="event-summary-heading"
-            className="break-words font-display text-2xl font-bold text-brand-ink"
+            className="wrap-break-word font-display text-2xl font-bold text-brand-ink"
           >
             {event.name}
           </h2>
