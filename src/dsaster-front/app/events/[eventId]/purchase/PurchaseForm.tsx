@@ -1,7 +1,12 @@
 "use client";
 
 import { useId } from "react";
-import { PurchaseError, PurchaseFormField, PurchaseSubmitButton, PurchaseSuccess } from "./components";
+import {
+  PurchaseError,
+  PurchaseFormField,
+  PurchaseSubmitButton,
+  PurchaseSuccess,
+} from "./components";
 import { usePurchase } from "./hooks/usePurchase";
 
 interface PurchaseFormProps {
@@ -68,9 +73,7 @@ export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
               inputRef={ref}
               disabled={status === "pending"}
               error={errors[name]}
-              onChange={(event) =>
-                handleInputChange(name, event.currentTarget)
-              }
+              onChange={(event) => handleInputChange(name, event.currentTarget)}
             />
           ))}
 

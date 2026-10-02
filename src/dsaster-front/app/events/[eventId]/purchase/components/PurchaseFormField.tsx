@@ -48,7 +48,11 @@ export function PurchaseFormField({
         onChange={onChange}
       />
       {error && (
-        <p id={errorId} className="mt-2 text-sm text-brand-maroon" aria-live="polite">
+        <p
+          id={errorId}
+          className="mt-2 text-sm text-brand-maroon"
+          aria-live="polite"
+        >
           {error}
         </p>
       )}
