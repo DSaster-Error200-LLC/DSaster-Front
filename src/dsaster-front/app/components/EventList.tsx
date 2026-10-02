@@ -36,7 +36,7 @@ export default function EventList({ events }: Readonly<EventListProps>) {
         </span>
       </div>
 
-      <ul role="list" className="divide-y divide-brand-border">
+      <ul className="divide-y divide-brand-border">
         {events.map((event) => (
           <li key={event.id}>
             <EventRow event={event} />
