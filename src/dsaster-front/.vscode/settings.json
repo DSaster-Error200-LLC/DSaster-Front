@@ -8,7 +8,8 @@
     ".vs/": true,
     ".next/": true,
     "node_modules/": true,
-    ".scannerwork/": true
+    ".scannerwork/": true,
+    ".husky/_/": true
   },
   "sonarlint.disableTelemetry": true
 }
