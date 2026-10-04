@@ -1,0 +1,38 @@
+name: Conventional Commits
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, edited, synchronize, reopened]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: PR title and commits
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src/dsaster-front
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - uses: ./.github/actions/setup-webapp
+
+      - name: PR title
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
+
+      - name: Commits
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: pnpm exec commitlint --from "origin/$GITHUB_BASE_REF" --to "$HEAD_SHA"

@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint .",
     "format:check": "prettier --check .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "prepare": "cd ../.. && husky src/dsaster-front/.husky"
   },
   "dependencies": {
     "axios": "^1.20.0",
@@ -18,6 +19,8 @@
     "react-dom": "^19.3.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@eslint-react/eslint-plugin": "^5.23.3",
     "@eslint/js": "^10.0.1",
     "@tailwindcss/postcss": "^4.3.3",
@@ -27,6 +30,7 @@
     "eslint": "^10.11.0",
     "eslint-config-next": "^16.3.8",
     "eslint-plugin-sonarjs": "^4.2.2",
+    "husky": "^9.1.7",
     "jiti": "^2.7.0",
     "orval": "^8.39.0",
     "prettier": "^3.9.9",
