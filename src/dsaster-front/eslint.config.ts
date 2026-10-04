@@ -28,7 +28,9 @@ export default defineConfig([
     ],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ["commitlint.config.js"],
+        },
       },
     },
     rules: {
