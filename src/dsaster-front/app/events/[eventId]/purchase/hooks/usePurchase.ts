@@ -18,6 +18,7 @@ export type PurchaseStatus = "idle" | "pending" | "success" | "error";
 export function usePurchase(eventId: string) {
   const fullNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
+  const idempotencyKeyRef = useRef<string | null>(null);
   const [status, setStatus] = useState<PurchaseStatus>("idle");
   const [errors, setErrors] = useState({ fullName: "", email: "" });
 
@@ -42,12 +43,15 @@ export function usePurchase(eventId: string) {
       return;
     }
 
+    // Se reutiliza en los reintentos para que el back no duplique la compra
+    idempotencyKeyRef.current ??= crypto.randomUUID();
     setStatus("pending");
     try {
       const purchased = await purchaseTicket(
         eventId,
         fullName.value,
         email.value,
+        idempotencyKeyRef.current,
       );
       setStatus(purchased ? "success" : "error");
     } catch {
@@ -59,6 +63,8 @@ export function usePurchase(eventId: string) {
     name: "fullName" | "email",
     input: HTMLInputElement,
   ) {
+    // Datos distintos son otra compra: necesita una clave nueva
+    idempotencyKeyRef.current = null;
     if (errors[name]) {
       const message = fieldError(input);
       setErrors((previous) => ({ ...previous, [name]: message }));

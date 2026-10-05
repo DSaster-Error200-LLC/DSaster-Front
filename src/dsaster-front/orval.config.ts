@@ -28,6 +28,7 @@ export default defineConfig({
     output: {
       target: "./api/booking.ts",
       httpClient: "axios",
+      headers: true,
       override: {
         mutator: {
           path: "./app/lib/api-mutator.ts",
