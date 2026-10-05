@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+//TODO delete this file when the real test is implemented
 describe("Sample Test Suite", () => {
   it("should pass basic assertion", () => {
     const sum = (a: number, b: number) => a + b;
