@@ -6,6 +6,35 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Vitest](https://img.shields.io/badge/Vitest-6E9F18?logo=vitest&logoColor=white)](https://vitest.dev/)
 
+## Getting started
+
+### Prerequisites
+
+- [Node.js (24.15.0+)](https://nodejs.org/en/download)
+- [pnpm (12+)](https://pnpm.io/installation)
+
+### Project setup
+
+Run the following commands from: `src/dsaster-front`
+
+```bash
+pnpm install
+```
+
+### Run the project
+
+```bash
+pnpm dev
+```
+
+### Validate the project
+
+```bash
+pnpm lint
+pnpm format:check
+pnpm test
+```
+
 ## Docs
 
 * [Development](./src/dsaster-front/README.md)

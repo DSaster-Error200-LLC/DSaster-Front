@@ -20,16 +20,18 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - `pnpm format`: Auto-format codebase with Prettier.
 - `pnpm exec tsc --noEmit`: Run TypeScript type-checker without building.
 - `pnpm build`: Production build (Next.js 16 App Router + Turbopack + TypeScript check).
+- `pnpm test`: Run the Vitest test suite.
 - `pnpm api`: Regenerate OpenAPI clients using Orval.
 
 ### Pre-commit / CI Verification Order
 
 Before committing or creating a PR, run the following checks and ensure all pass with zero errors:
 
-1. `pnpm lint`
-2. `pnpm format`
-3. `pnpm format:check`
-4. `pnpm build`
+1. `pnpm build`
+2. `pnpm lint`
+3. `pnpm format`
+4. `pnpm format:check`
+5. `pnpm test`
 
 ## Code & Framework Conventions
 
