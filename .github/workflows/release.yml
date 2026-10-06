@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+# Each job asks for exactly what it needs.
+permissions:
+  contents: read
+
+jobs:
+  github-release:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'src/dsaster-front'
+    permissions:
+      contents: write   # create the release
+
+    steps:
+    - uses: actions/checkout@v7
+      with:
+        fetch-depth: 0   # full history and tags: the changelog reads commits since the previous release
+
+    - name: "Build changelog"
+      working-directory: .
+      # No pipe into tee: steps run without pipefail, so a failing script would pass unnoticed.
+      run: |
+        bash scripts/changelog.sh "$GITHUB_REF_NAME" > release-notes.md
+        cat release-notes.md
+    
+    - uses: ./.github/actions/setup-api

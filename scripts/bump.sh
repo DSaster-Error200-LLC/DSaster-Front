@@ -15,8 +15,8 @@ set -euo pipefail
 
 readonly RELEASE_BRANCH=main
 readonly REMOTE=origin
-readonly CI_WORKFLOW=api-pr.yml   # the workflow in .github/workflows/ that must be green
-readonly APP_DIR=src/dsaster-search   # holds node_modules and the tests
+readonly CI_WORKFLOW=webapp-pr.yml   # the workflow in .github/workflows/ that must be green
+readonly APP_DIR=src/dsaster-front   # holds node_modules and the tests
 # vX.Y.Z without leading zeros: bash would read "08" as octal and fail.
 readonly STABLE_TAG='^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$'
 readonly USAGE='usage: bump.sh [--major | --minor | --patch | --alpha | --beta] [-y] [--dry-run]'
