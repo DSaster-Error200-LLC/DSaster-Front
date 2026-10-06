@@ -16,6 +16,10 @@ export interface PurchaseTicketCommand {
   idempotencyKey?: string;
 }
 
+export type PostEventsEventIdTicketsHeaders = {
+'X-Idempotency-Key'?: string;
+};
+
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
@@ -49,10 +53,11 @@ export const getHealth = (
 export const postEventsEventIdTickets = (
     eventId: string,
     purchaseTicketCommand: PurchaseTicketCommand,
+    headers?: PostEventsEventIdTicketsHeaders,
  options?: SecondParameter<typeof bookingInstance<void>>,) => {
       return bookingInstance<void>(
       {url: `/events/${eventId}/tickets`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
+      headers: {'Content-Type': 'application/json', ...headers},
       data: purchaseTicketCommand
     },
       options);
