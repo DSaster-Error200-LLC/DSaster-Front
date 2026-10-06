@@ -29,5 +29,3 @@ jobs:
       run: |
         bash scripts/changelog.sh "$GITHUB_REF_NAME" > release-notes.md
         cat release-notes.md
-    
-    - uses: ./.github/actions/setup-api
