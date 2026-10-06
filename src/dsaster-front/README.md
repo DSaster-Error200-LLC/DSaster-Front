@@ -35,6 +35,9 @@ pnpm dev
 ## Run before commit
 
 ```bash
+pnpm build
 pnpm lint
 pnpm format
+pnpm format:check
+pnpm test
 ```
