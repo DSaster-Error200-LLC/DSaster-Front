@@ -7,6 +7,7 @@ function stripTrailingSlashes(value: string | undefined) {
 }
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   rewrites() {
     const booking = stripTrailingSlashes(process.env.BOOKING_API_URL);
     const search = stripTrailingSlashes(process.env.SEARCH_API_URL);
