@@ -52,13 +52,14 @@ context. The API proxy URLs are fixed at build time; rebuild the image when they
 change. Passing different URLs to `docker run` does not update the proxies.
 Inside the container, `localhost` and `127.0.0.1` refer to the container itself.
 
-Start the container:
+Start the container, mapping host port `3001` to container port `3000` so
+SearchService can continue using host port `3000`:
 
 ```bash
-docker run --detach --rm --name dsaster-front -p 3000:3000 dsaster-front
+docker run --detach --rm --name dsaster-front -p 3001:3000 dsaster-front
 ```
 
-Open [http://localhost:3000](http://localhost:3000). To stop and remove the
+Open [http://localhost:3001](http://localhost:3001). To stop and remove the
 container, run:
 
 ```bash
