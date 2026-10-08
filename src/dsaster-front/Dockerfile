@@ -2,10 +2,10 @@ ARG NODE_IMAGE=node:24-alpine
 
 FROM ${NODE_IMAGE} AS builder
 WORKDIR /app
-ENV HUSKY=0 NEXT_TELEMETRY_DISABLED=1
+ENV HUSKY=0 NEXT_TELEMETRY_DISABLED=1 COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
-RUN npm install --global pnpm@12.4.1
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN corepack enable && corepack install
 RUN pnpm install --frozen-lockfile
 
 COPY . .
