@@ -1,0 +1,14 @@
+# Allowlist: only what the build needs enters the context
+*
+!package.json
+!pnpm-lock.yaml
+!pnpm-workspace.yaml
+!.npmrc
+!next.config.ts
+!tsconfig.json
+!postcss.config.mjs
+!app
+!api
+!public
+**/*.test.*
+**/*.spec.*
