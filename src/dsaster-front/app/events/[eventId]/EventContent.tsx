@@ -1,21 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { isAxiosError } from "axios";
-import { eventsControllerGetDetails, type Event } from "@/api/search";
 import Navbar from "@/app/components/Navbar";
 import EventDetails from "@/app/events/[eventId]/EventDetails";
 import EventNotFound from "@/app/events/[eventId]/not-found";
 import PurchaseDetails from "@/app/events/[eventId]/purchase/PurchaseDetails";
+import {
+  getEventDetails,
+  type GetEventDetailsResult,
+} from "@/app/lib/get-event-details";
 
 interface EventContentProps {
   readonly eventId: string;
   readonly view: "details" | "purchase";
 }
 
-type EventState =
-  | { readonly status: "loading" | "missing" | "error" }
-  | { readonly status: "success"; readonly event: Event };
+type EventState = { readonly status: "loading" } | GetEventDetailsResult;
 
 export default function EventContent({
   eventId,
@@ -27,17 +27,9 @@ export default function EventContent({
   useEffect(() => {
     const controller = new AbortController();
 
-    void eventsControllerGetDetails(eventId, { signal: controller.signal })
-      .then((event) => {
-        if (!controller.signal.aborted) setState({ status: "success", event });
-      })
-      .catch((error: unknown) => {
-        if (controller.signal.aborted) return;
-        const status = isAxiosError(error) ? error.response?.status : undefined;
-        setState({
-          status: status === 400 || status === 404 ? "missing" : "error",
-        });
-      });
+    void getEventDetails(eventId, controller.signal).then((result) => {
+      if (!controller.signal.aborted) setState(result);
+    });
 
     return () => controller.abort();
   }, [eventId, attempt]);
