@@ -11,9 +11,7 @@ RUN pnpm install --frozen-lockfile
 COPY . .
 ARG BOOKING_API_URL
 ARG SEARCH_API_URL
-RUN : "${BOOKING_API_URL:?BOOKING_API_URL build argument is required}" \
-    && : "${SEARCH_API_URL:?SEARCH_API_URL build argument is required}" \
-    && pnpm build
+RUN pnpm build
 
 
 FROM ${NODE_IMAGE} AS runtime
