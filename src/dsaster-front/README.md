@@ -6,17 +6,15 @@
 pnpm install
 ```
 
-Create `.env.local` in this application directory and set whichever service
-URLs are available:
+Create `.env.local` in this application directory and override the default service URLs if needed:
 
 ```dotenv
-BOOKING_API_URL=https://your-booking-host
-SEARCH_API_URL=https://your-search-host
+SEARCH_API_URL=http://localhost:3000
+BOOKING_API_URL=http://localhost:5283
 ```
 
-Replace the example URLs with your service addresses. Both variables are
-optional and can be configured independently. They stay on the server; do not
-prefix them with `NEXT_PUBLIC_`.
+If these variables are not set, the app falls back to the local development endpoints above.
+They stay on the server; do not prefix them with `NEXT_PUBLIC_`.
 
 Generated browser clients use `/api/booking` and `/api/search`. Next.js rewrites
 forward those requests to the corresponding service, removing the proxy prefix.
