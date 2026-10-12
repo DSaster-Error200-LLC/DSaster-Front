@@ -9,7 +9,7 @@ pnpm install
 Create `.env.local` in this application directory and override the default service URLs if needed:
 
 ```dotenv
-SEARCH_API_URL=http://localhost:3000
+SEARCH_API_URL=http://localhost:5201
 BOOKING_API_URL=http://localhost:5283
 ```
 
@@ -52,15 +52,13 @@ fixed at build time; rebuild the image when they change. Passing different URLs
 to `docker run` does not update the proxies. Inside the container, `localhost`
 and `127.0.0.1` refer to the container itself.
 
-Start the container, mapping host port `3001` to container port `3000` so
-SearchService can continue using host port `3000`:
-
 ```bash
-docker run --detach --rm --name dsaster-front -p 3001:3000 dsaster-front
+docker run --detach --rm --name dsaster-front -p 5200:5200 dsaster-front
 ```
 
-Open [http://localhost:3001](http://localhost:3001). To stop and remove the
-container, run:
+Open [http://localhost:5200](http://localhost:5200).
+
+To stop and remove the container, run:
 
 ```bash
 docker stop dsaster-front
