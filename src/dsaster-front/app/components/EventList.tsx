@@ -1,8 +1,8 @@
-import { Event } from "@/api/search";
+import { EventPreview } from "@/api/search";
 import EventRow from "@/app/components/EventRow";
 
 interface EventListProps {
-  readonly events: readonly Event[];
+  readonly events: readonly EventPreview[];
 }
 
 export default function EventList({ events }: Readonly<EventListProps>) {
