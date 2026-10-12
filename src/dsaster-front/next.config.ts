@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const DEFAULT_SEARCH_API_URL = "http://localhost:3000";
+const DEFAULT_SEARCH_API_URL = "http://localhost:5201";
 const DEFAULT_BOOKING_API_URL = "http://localhost:5283";
 
 function stripTrailingSlashes(value: string) {
