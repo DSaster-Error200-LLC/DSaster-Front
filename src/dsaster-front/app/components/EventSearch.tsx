@@ -1,85 +1,50 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { type EventPreview } from "@/api/search";
+import { useEffect, useRef, useState } from "react";
 import EventList from "@/app/components/EventList";
 import Hero from "@/app/components/Hero";
-import { searchEvents } from "@/app/lib/search-events";
+import {
+  searchEvents,
+  type SearchEventsResult,
+} from "@/app/lib/get-search-events";
+
+type SearchState =
+  | { readonly status: "idle" }
+  | { readonly status: "loading" }
+  | SearchEventsResult;
 
 export default function EventSearch() {
   const [query, setQuery] = useState("");
-  const [events, setEvents] = useState<readonly EventPreview[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [hasError, setHasError] = useState(false);
-  const requestIdRef = useRef(0);
-  const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [state, setState] = useState<SearchState>({ status: "idle" });
+  const requestControllerRef = useRef<AbortController | null>(null);
 
-  const findEvents = useCallback(async (name: string) => {
-    const currentRequestId = ++requestIdRef.current;
-    setIsLoading(true);
-    setHasError(false);
+  const findEvents = (name: string) => {
+    requestControllerRef.current?.abort();
+    const controller = new AbortController();
+    requestControllerRef.current = controller;
+    setState({ status: "loading" });
 
-    try {
-      const results = await searchEvents(name);
-      if (currentRequestId === requestIdRef.current) {
-        setEvents(results);
+    void searchEvents(name, controller.signal).then((result) => {
+      if (!controller.signal.aborted) {
+        setState(result);
       }
-    } catch {
-      if (currentRequestId === requestIdRef.current) {
-        setEvents([]);
-        setHasError(true);
-      }
-    } finally {
-      if (currentRequestId === requestIdRef.current) {
-        setIsLoading(false);
-      }
-    }
-  }, []);
+    });
+  };
 
-  const handleQueryChange = useCallback(
-    (nextQuery: string) => {
-      requestIdRef.current += 1;
-      setQuery(nextQuery);
-      setEvents([]);
-      setHasError(false);
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
+  const handleQueryChange = (nextQuery: string) => {
+    setQuery(nextQuery);
+  };
 
-      const name = nextQuery.trim();
-      if (!name) {
-        setIsLoading(false);
-        debounceTimerRef.current = null;
-        return;
-      }
-
-      setIsLoading(true);
-      debounceTimerRef.current = setTimeout(() => {
-        debounceTimerRef.current = null;
-        void findEvents(name);
-      }, 300);
-    },
-    [findEvents],
-  );
-
-  const handleSearch = useCallback(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-      debounceTimerRef.current = null;
-    }
-
+  const handleSearch = () => {
     const name = query.trim();
     if (name) {
-      void findEvents(name);
+      findEvents(name);
     }
-  }, [findEvents, query]);
+  };
 
   useEffect(
     () => () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-      requestIdRef.current += 1;
+      requestControllerRef.current?.abort();
     },
     [],
   );
@@ -93,18 +58,18 @@ export default function EventSearch() {
         onQueryChange={handleQueryChange}
         onSearch={handleSearch}
       />
-      <div aria-live="polite" aria-busy={isLoading}>
-        {!hasQuery && (
+      <div aria-live="polite" aria-busy={state.status === "loading"}>
+        {state.status === "idle" && !hasQuery && (
           <p className="px-6 pb-8 text-center text-brand-muted">
             Escribe el nombre de un evento para ver resultados.
           </p>
         )}
-        {hasQuery && isLoading && (
+        {state.status === "loading" && (
           <p className="px-6 pb-8 text-center text-brand-muted">
             Buscando eventos...
           </p>
         )}
-        {hasQuery && !isLoading && hasError && (
+        {state.status === "error" && (
           <p role="alert" className="px-6 pb-8 text-center text-brand-rust">
             <span>No fue posible buscar eventos. Inténtalo de nuevo.</span>
             <button
@@ -116,7 +81,9 @@ export default function EventSearch() {
             </button>
           </p>
         )}
-        {hasQuery && !isLoading && !hasError && <EventList events={events} />}
+        {(state.status === "success" || state.status === "missing") && (
+          <EventList events={state.status === "success" ? state.events : []} />
+        )}
       </div>
     </>
   );
