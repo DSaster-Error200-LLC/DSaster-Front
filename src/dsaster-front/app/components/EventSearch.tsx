@@ -15,6 +15,7 @@ type SearchState =
 
 export default function EventSearch() {
   const [query, setQuery] = useState("");
+  const [searchedName, setSearchedName] = useState("");
   const [state, setState] = useState<SearchState>({ status: "idle" });
   const requestControllerRef = useRef<AbortController | null>(null);
 
@@ -37,6 +38,7 @@ export default function EventSearch() {
 
   const handleSearch = () => {
     const name = query.trim();
+    setSearchedName(name);
     if (name) {
       findEvents(name);
     }
@@ -49,8 +51,6 @@ export default function EventSearch() {
     [],
   );
 
-  const hasQuery = query.trim().length > 0;
-
   return (
     <>
       <Hero
@@ -59,11 +59,6 @@ export default function EventSearch() {
         onSearch={handleSearch}
       />
       <div aria-live="polite" aria-busy={state.status === "loading"}>
-        {state.status === "idle" && !hasQuery && (
-          <p className="px-6 pb-8 text-center text-brand-muted">
-            Escribe el nombre de un evento para ver resultados.
-          </p>
-        )}
         {state.status === "loading" && (
           <p className="px-6 pb-8 text-center text-brand-muted">
             Buscando eventos...
@@ -71,18 +66,14 @@ export default function EventSearch() {
         )}
         {state.status === "error" && (
           <p role="alert" className="px-6 pb-8 text-center text-brand-rust">
-            <span>No fue posible buscar eventos. Inténtalo de nuevo.</span>
-            <button
-              type="button"
-              onClick={handleSearch}
-              className="ml-2 font-semibold underline"
-            >
-              Reintentar
-            </button>
+            No fue posible buscar eventos. Inténtalo de nuevo.
           </p>
         )}
-        {(state.status === "success" || state.status === "missing") && (
-          <EventList events={state.status === "success" ? state.events : []} />
+        {state.status === "success" && (
+          <EventList
+            events={state.status === "success" ? state.events : []}
+            searchedName={searchedName}
+          />
         )}
       </div>
     </>

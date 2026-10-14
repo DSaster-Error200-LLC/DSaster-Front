@@ -14,26 +14,6 @@ describe("Hero", () => {
       }),
     );
 
-  it("renders the main title", () => {
-    renderHero();
-
-    expect(
-      screen.getByRole("heading", {
-        name: /tus entradas favoritas, sin dramas ni desastres/i,
-      }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders the description", () => {
-    renderHero();
-
-    expect(
-      screen.getByText(
-        /descubre los mejores conciertos, festivales, teatro y deportes/i,
-      ),
-    ).toBeInTheDocument();
-  });
-
   it("renders the search input", () => {
     renderHero();
 

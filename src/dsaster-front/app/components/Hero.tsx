@@ -16,16 +16,10 @@ export default function Hero({
   return (
     <section className="mx-auto max-w-4xl px-6 py-24 text-center">
       <h1 className="font-display text-4xl font-extrabold leading-tight tracking-tight text-brand-ink sm:text-5xl">
-        Tus entradas favoritas,
+        TicketDsaster
         <br />
-        <span className="text-brand-rust">sin dramas ni desastres.</span>
+        <span className="text-brand-rust">encuentra tus eventos</span>
       </h1>
-
-      <p className="mx-auto mt-6 max-w-xl text-base text-brand-muted sm:text-lg">
-        Descubre los mejores conciertos, festivales, teatro y deportes con
-        compra protegida, precios transparentes y acceso inmediato en tu móvil.
-      </p>
-
       <form
         role="search"
         onSubmit={(event) => {

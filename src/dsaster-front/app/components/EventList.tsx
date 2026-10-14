@@ -3,22 +3,13 @@ import EventRow from "@/app/components/EventRow";
 
 interface EventListProps {
   readonly events: readonly EventPreview[];
+  readonly searchedName: string;
 }
 
-export default function EventList({ events }: Readonly<EventListProps>) {
-  if (events.length === 0) {
-    return (
-      <section
-        aria-label="Resultados de eventos"
-        className="mx-auto max-w-4xl px-6 py-20 text-center"
-      >
-        <p className="text-lg text-brand-muted">
-          No se encontraron eventos para mostrar.
-        </p>
-      </section>
-    );
-  }
-
+export default function EventList({
+  events,
+  searchedName,
+}: Readonly<EventListProps>) {
   return (
     <section
       aria-labelledby="events-heading"
@@ -31,18 +22,24 @@ export default function EventList({ events }: Readonly<EventListProps>) {
         >
           Próximos Eventos
         </h2>
-        <span className="text-sm font-medium text-brand-muted">
-          {events.length} {events.length === 1 ? "evento" : "eventos"}
+        <span className="text-sm font-medium text-orange-700">
+          {`${events.length} ${events.length === 1 ? "evento" : "eventos"} para la búsqueda "${searchedName}"`}{" "}
         </span>
       </div>
 
-      <ul className="divide-y divide-brand-border">
-        {events.map((event) => (
-          <li key={event.id}>
-            <EventRow event={event} />
-          </li>
-        ))}
-      </ul>
+      {events.length === 0 ? (
+        <p className="text-lg text-brand-muted">
+          No se encontraron eventos para mostrar.
+        </p>
+      ) : (
+        <ul className="divide-y divide-brand-border">
+          {events.map((event) => (
+            <li key={event.id}>
+              <EventRow event={event} />
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
