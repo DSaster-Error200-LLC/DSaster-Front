@@ -1,6 +1,7 @@
 import { defineConfig } from "orval";
 
 const searchRelease = "v1.0.0";
+const bookingRelease = "v0.0.0-beta";
 
 export default defineConfig({
   search: {
@@ -23,7 +24,10 @@ export default defineConfig({
   },
   booking: {
     input: {
-      target: "./openapi/booking.json",
+      target:
+        "https://github.com/zackspike" +
+        `/sales-module/releases/download/${bookingRelease}` +
+        "/openapi.json",
     },
     output: {
       target: "./api/booking.ts",

@@ -3,36 +3,155 @@
  * Do not edit manually.
  * BookingService API (Sap-atitos)
  * Backend API responsible for ticket purchasing, idempotency handling, and issuance (MVP-02).
- * OpenAPI spec version: v1-commit-cf0898eb792920a40079504d353f4bcc987cf0fa
+ * OpenAPI spec version: v1
  */
 import { bookingInstance } from '../app/lib/api-mutator';
-export interface PurchaseTicketCommand {
-  eventId?: string;
-  ticketId?: string;
+/**
+ * @nullable
+ */
+export type ErrorResponseErrors = {[key: string]: string[]} | null;
+
+/**
+ * Standardized JSON response payload for API errors.
+ */
+export interface ErrorResponse {
+  statusCode?: number;
   /** @nullable */
-  fullName?: string | null;
+  message?: string | null;
   /** @nullable */
-  email?: string | null;
-  idempotencyKey?: string;
+  details?: string | null;
+  /** @nullable */
+  traceId?: string | null;
+  timestampUtc?: string;
+  /** @nullable */
+  errors?: ErrorResponseErrors;
 }
 
-export type PostEventsEventIdTicketsHeaders = {
+/**
+ * Body of POST /events/{eventId}/tickets/{ticketId}/purchase. Both fields are required;
+ * if either is missing or blank the request is rejected with 400 Bad Request.
+ */
+export interface PurchaseTicketRequest {
+  /**
+     * Full name of the ticket purchaser (e.g., 'Jane Doe').
+     * @nullable
+     */
+  fullName?: string | null;
+  /**
+     * Valid RFC 5321 email address for order confirmation (e.g., 'jane.doe@example.com').
+     * @nullable
+     */
+  email?: string | null;
+}
+
+/**
+ * Body of POST /events/{eventId}/tickets/{ticketId}/reserve. The email identifies the buyer
+ * who will hold the seat; the purchase must be made with the same email.
+ */
+export interface ReserveSeatRequest {
+  /**
+     * Full name of the buyer (e.g., 'Jane Doe').
+     * @nullable
+     */
+  fullName?: string | null;
+  /**
+     * Email of the buyer; it must match the one used to purchase the seat.
+     * @nullable
+     */
+  email?: string | null;
+}
+
+/**
+ * Unified DTO representing seat availability (SP-04 / ALIGN-02 / APP-01 / APP-02).
+ * Matches the agreed seat contract with Frontend: ticketId, seatNumber, and status.
+ */
+export interface SeatAvailabilityDto {
+  /** Unique identifier of the ticket (seat). */
+  ticketId?: string;
+  /**
+     * Designated seat label within the event venue (e.g., 'A-1').
+     * @nullable
+     */
+  seatNumber?: string | null;
+  /**
+     * Current availability status of the seat ('Available', 'Reserved' or 'Sold').
+     * @nullable
+     */
+  status?: string | null;
+}
+
+/**
+ * Seat locked for a buyer until BookingService.Api.Contracts.SeatReservationResponse.ExpiresAtUtc.
+ */
+export interface SeatReservationResponse {
+  /** Unique identifier of the reserved ticket (seat). */
+  ticketId?: string;
+  /** Unique identifier of the event. */
+  eventId?: string;
+  /**
+     * Designated seat number (e.g., 'A-1').
+     * @nullable
+     */
+  seatNumber?: string | null;
+  /**
+     * Email of the buyer holding the reservation.
+     * @nullable
+     */
+  email?: string | null;
+  /** UTC time when the reservation expires and other buyers can take the seat. */
+  expiresAtUtc?: string;
+}
+
+/**
+ * Response payload returning issued ticket details.
+ */
+export interface TicketResponse {
+  /** Unique identifier of the ticket. */
+  ticketId?: string;
+  /** Unique identifier of the event. */
+  eventId?: string;
+  /**
+     * Designated seat number (e.g., 'A-1').
+     * @nullable
+     */
+  seatNumber?: string | null;
+  /**
+     * Full name of the ticket holder.
+     * @nullable
+     */
+  fullName?: string | null;
+  /**
+     * Email address associated with the purchase.
+     * @nullable
+     */
+  email?: string | null;
+  /**
+     * Unique ticket validation code (format: 'TK-{GUID:N}').
+     * @nullable
+     */
+  ticketCode?: string | null;
+  /**
+     * UTC timestamp when the ticket was purchased.
+     * @nullable
+     */
+  purchasedAtUtc?: string | null;
+}
+
+export type PurchaseTicketHeaders = {
+/**
+ * Client-provided UUID in the X-Idempotency-Key header. Required to ensure safe replay.
+ */
 'X-Idempotency-Key'?: string;
 };
 
 type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
 
 
-  export const getTestError = (
-
- options?: SecondParameter<typeof bookingInstance<void>>,) => {
-      return bookingInstance<void>(
-      {url: `/test/error`, method: 'GET'
-    },
-      options);
-    }
-
-export const get = (
+  /**
+ * Returns basic API identification and online status.
+ * @summary Root API status
+ */
+export const getApiRoot = (
 
  options?: SecondParameter<typeof bookingInstance<void>>,) => {
       return bookingInstance<void>(
@@ -41,7 +160,11 @@ export const get = (
       options);
     }
 
-export const getHealth = (
+/**
+ * Liveness and readiness probe reporting service health.
+ * @summary Health check probe
+ */
+export const getHealthStatus = (
 
  options?: SecondParameter<typeof bookingInstance<void>>,) => {
       return bookingInstance<void>(
@@ -50,20 +173,71 @@ export const getHealth = (
       options);
     }
 
-export const postEventsEventIdTickets = (
+/**
+ * Returns all seats currently in 'Available' status and not reserved by a buyer for the specified event ID.
+ * @summary Retrieves all available seats for the specified event.
+ */
+export const getAvailableTickets = (
     eventId: string,
-    purchaseTicketCommand: PurchaseTicketCommand,
-    headers?: PostEventsEventIdTicketsHeaders,
- options?: SecondParameter<typeof bookingInstance<void>>,) => {
-      return bookingInstance<void>(
-      {url: `/events/${eventId}/tickets`, method: 'POST',
-      headers: {'Content-Type': 'application/json', ...headers},
-      data: purchaseTicketCommand
+ options?: SecondParameter<typeof bookingInstance<SeatAvailabilityDto[]>>,) => {
+      return bookingInstance<SeatAvailabilityDto[]>(
+      {url: `/events/${eventId}/tickets`, method: 'GET'
     },
       options);
     }
 
-export type GetTestErrorResult = NonNullable<Awaited<ReturnType<typeof getTestError>>>
-export type GetResult = NonNullable<Awaited<ReturnType<typeof get>>>
-export type GetHealthResult = NonNullable<Awaited<ReturnType<typeof getHealth>>>
-export type PostEventsEventIdTicketsResult = NonNullable<Awaited<ReturnType<typeof postEventsEventIdTickets>>>
+/**
+ * Checks whether a specific seat in an event is available, reserved or sold.
+ * @summary Checks the current availability of a specific seat in an event.
+ */
+export const checkTicketAvailability = (
+    eventId: string,
+    ticketId: string,
+ options?: SecondParameter<typeof bookingInstance<SeatAvailabilityDto>>,) => {
+      return bookingInstance<SeatAvailabilityDto>(
+      {url: `/events/${eventId}/tickets/${ticketId}/availability`, method: 'GET'
+    },
+      options);
+    }
+
+/**
+ * Locks a seat for the buyer identified by email for 10 minutes. Reserving again with the same email renews the reservation. The seat must be reserved before it can be purchased.
+ * @summary Reserves (locks) a specific seat for the buyer during 10 minutes.
+ */
+export const reserveSeat = (
+    eventId: string,
+    ticketId: string,
+    reserveSeatRequest: ReserveSeatRequest,
+ options?: SecondParameter<typeof bookingInstance<SeatReservationResponse>>,) => {
+      return bookingInstance<SeatReservationResponse>(
+      {url: `/events/${eventId}/tickets/${ticketId}/reserve`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: reserveSeatRequest
+    },
+      options);
+    }
+
+/**
+ * Purchases a seat previously reserved with the same email. Requires an X-Idempotency-Key header. If the key was already used for this seat, safely returns the existing ticket (200 OK).
+ * @summary Purchases a specific seat for an event with idempotency protection.
+ */
+export const purchaseTicket = (
+    eventId: string,
+    ticketId: string,
+    purchaseTicketRequest: PurchaseTicketRequest,
+    headers?: PurchaseTicketHeaders,
+ options?: SecondParameter<typeof bookingInstance<TicketResponse>>,) => {
+      return bookingInstance<TicketResponse>(
+      {url: `/events/${eventId}/tickets/${ticketId}/purchase`, method: 'POST',
+      headers: {'Content-Type': 'application/json', ...headers},
+      data: purchaseTicketRequest
+    },
+      options);
+    }
+
+export type GetApiRootResult = NonNullable<Awaited<ReturnType<typeof getApiRoot>>>
+export type GetHealthStatusResult = NonNullable<Awaited<ReturnType<typeof getHealthStatus>>>
+export type GetAvailableTicketsResult = NonNullable<Awaited<ReturnType<typeof getAvailableTickets>>>
+export type CheckTicketAvailabilityResult = NonNullable<Awaited<ReturnType<typeof checkTicketAvailability>>>
+export type ReserveSeatResult = NonNullable<Awaited<ReturnType<typeof reserveSeat>>>
+export type PurchaseTicketResult = NonNullable<Awaited<ReturnType<typeof purchaseTicket>>>

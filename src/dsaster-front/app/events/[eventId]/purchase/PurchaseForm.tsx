@@ -6,8 +6,10 @@ import {
   PurchaseFormField,
   PurchaseSubmitButton,
   PurchaseSuccess,
+  SeatMap,
 } from "./components";
 import { usePurchase } from "./hooks/usePurchase";
+import { useSeats } from "./hooks/useSeats";
 
 interface PurchaseFormProps {
   readonly eventId: string;
@@ -15,6 +17,7 @@ interface PurchaseFormProps {
 
 export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
   const id = useId();
+  const seats = useSeats(eventId);
   const {
     fullNameRef,
     emailRef,
@@ -45,42 +48,53 @@ export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
   return (
     <div lang="es" className="w-full">
       {status !== "success" && (
-        <form
-          noValidate
-          aria-labelledby={`${id}-heading`}
-          aria-busy={status === "pending"}
-          className="space-y-5"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void purchase();
-          }}
-        >
-          <h2
-            id={`${id}-heading`}
-            className="font-display text-2xl font-bold text-brand-ink"
+        <>
+          <SeatMap
+            state={seats.state}
+            selectedSeat={seats.selectedSeat}
+            onSelect={seats.selectSeat}
+            onRetry={seats.retry}
+          />
+
+          <form
+            noValidate
+            aria-labelledby={`${id}-heading`}
+            aria-busy={status === "pending"}
+            className="space-y-5"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void purchase();
+            }}
           >
-            Datos del comprador
-          </h2>
+            <h2
+              id={`${id}-heading`}
+              className="font-display text-2xl font-bold text-brand-ink"
+            >
+              Datos del comprador
+            </h2>
 
-          {fields.map(({ name, label, type, autoComplete, ref }) => (
-            <PurchaseFormField
-              key={name}
-              id={id}
-              name={name}
-              label={label}
-              type={type}
-              autoComplete={autoComplete}
-              inputRef={ref}
-              disabled={status === "pending"}
-              error={errors[name]}
-              onChange={(event) => handleInputChange(name, event.currentTarget)}
-            />
-          ))}
+            {fields.map(({ name, label, type, autoComplete, ref }) => (
+              <PurchaseFormField
+                key={name}
+                id={id}
+                name={name}
+                label={label}
+                type={type}
+                autoComplete={autoComplete}
+                inputRef={ref}
+                disabled={status === "pending"}
+                error={errors[name]}
+                onChange={(event) =>
+                  handleInputChange(name, event.currentTarget)
+                }
+              />
+            ))}
 
-          <PurchaseError hasError={hasError} />
+            <PurchaseError hasError={hasError} />
 
-          <PurchaseSubmitButton isPending={status === "pending"} />
-        </form>
+            <PurchaseSubmitButton isPending={status === "pending"} />
+          </form>
+        </>
       )}
 
       <PurchaseSuccess isSuccess={status === "success"} />
