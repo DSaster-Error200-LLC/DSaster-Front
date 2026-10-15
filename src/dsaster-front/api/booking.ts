@@ -16,6 +16,17 @@ export interface PurchaseTicketCommand {
   idempotencyKey?: string;
 }
 
+export interface TicketResponse {
+  ticketId: string;
+  eventId: string;
+  seatNumber: string;
+  fullName: string;
+  email: string;
+  ticketCode: string;
+  /** @nullable */
+  purchasedAtUtc?: string | null;
+}
+
 export type PostEventsEventIdTicketsHeaders = {
 'X-Idempotency-Key'?: string;
 };
@@ -54,8 +65,8 @@ export const postEventsEventIdTickets = (
     eventId: string,
     purchaseTicketCommand: PurchaseTicketCommand,
     headers?: PostEventsEventIdTicketsHeaders,
- options?: SecondParameter<typeof bookingInstance<void>>,) => {
-      return bookingInstance<void>(
+ options?: SecondParameter<typeof bookingInstance<TicketResponse>>,) => {
+      return bookingInstance<TicketResponse>(
       {url: `/events/${eventId}/tickets`, method: 'POST',
       headers: {'Content-Type': 'application/json', ...headers},
       data: purchaseTicketCommand
