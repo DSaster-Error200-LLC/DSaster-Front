@@ -1,58 +1,46 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { createElement } from "react";
 import Hero from "./components/Hero";
 
 describe("Hero", () => {
-  it("renders the main title", () => {
-    render(createElement(Hero));
-
-    expect(
-      screen.getByRole("heading", {
-        name: /tus entradas favoritas, sin dramas ni desastres/i,
+  const renderHero = (overrides = {}) =>
+    render(
+      createElement(Hero, {
+        query: "",
+        onQueryChange: vi.fn(),
+        onSearch: vi.fn(),
+        ...overrides,
       }),
-    ).toBeInTheDocument();
-  });
-
-  it("renders the description", () => {
-    render(createElement(Hero));
-
-    expect(
-      screen.getByText(
-        /descubre los mejores conciertos, festivales, teatro y deportes/i,
-      ),
-    ).toBeInTheDocument();
-  });
+    );
 
   it("renders the search input", () => {
-    render(createElement(Hero));
+    renderHero();
 
     expect(
-      screen.getByPlaceholderText("Artista, festival, obra o recinto"),
+      screen.getByPlaceholderText("Nombre del evento"),
     ).toBeInTheDocument();
   });
 
   it("renders the search button", () => {
-    render(createElement(Hero));
+    renderHero();
 
     expect(screen.getByRole("button", { name: /buscar/i })).toBeInTheDocument();
   });
 
-  it("shows an alert when the search button is clicked", async () => {
-    const user = userEvent.setup();
-    const alertMock = vi
-      .spyOn(window, "alert")
-      .mockImplementation(() => undefined);
+  it("notifies when the query changes and submits", () => {
+    const onQueryChange = vi.fn();
+    const onSearch = vi.fn();
 
-    render(createElement(Hero));
+    renderHero({ onQueryChange, onSearch });
 
-    await user.click(screen.getByRole("button", { name: /buscar/i }));
-
-    expect(alertMock).toHaveBeenCalledWith(
-      "¡Función de búsqueda por implementar!",
+    fireEvent.change(
+      screen.getByRole("searchbox", { name: "Buscar eventos por nombre" }),
+      { target: { value: "Concierto" } },
     );
+    fireEvent.click(screen.getByRole("button", { name: /buscar/i }));
 
-    alertMock.mockRestore();
+    expect(onQueryChange).toHaveBeenCalledWith("Concierto");
+    expect(onSearch).toHaveBeenCalledOnce();
   });
 });

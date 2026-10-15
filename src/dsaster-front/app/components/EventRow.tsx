@@ -1,9 +1,9 @@
 import Link from "next/link";
-import { Event } from "@/api/search";
+import { EventPreview } from "@/api/search";
 import { formatEventDate } from "@/app/lib/date";
 
 interface EventRowProps {
-  readonly event: Event;
+  readonly event: EventPreview;
 }
 
 export default function EventRow({ event }: Readonly<EventRowProps>) {
@@ -38,7 +38,7 @@ export default function EventRow({ event }: Readonly<EventRowProps>) {
       {/* Venue & Action */}
       <div className="flex w-full shrink-0 items-center justify-between gap-4 pt-2 sm:w-auto sm:flex-col sm:items-end sm:pt-0">
         <span className="text-sm font-medium text-brand-ink/90 sm:text-right">
-          {event.venue.name}
+          {event.venueName}
         </span>
         <span className="inline-flex items-center gap-1 text-sm font-semibold text-brand-rust opacity-0 transition-opacity group-hover:opacity-100 sm:mt-1">
           Entradas
