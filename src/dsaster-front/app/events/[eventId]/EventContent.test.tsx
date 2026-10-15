@@ -6,10 +6,19 @@ import { eventsControllerGetDetails, type Event } from "@/api/search";
 import EventContent from "@/app/events/[eventId]/EventContent";
 import EventPage from "@/app/events/[eventId]/page";
 import PurchasePage from "@/app/events/[eventId]/purchase/page";
+import {
+  getSeatAvailability,
+  SeatStatus,
+  type Seat,
+} from "@/app/lib/get-seat-availability";
 import { purchaseTicket } from "@/app/lib/purchase-ticket";
 
 vi.mock("@/api/search", () => ({ eventsControllerGetDetails: vi.fn() }));
 vi.mock("@/app/lib/purchase-ticket", () => ({ purchaseTicket: vi.fn() }));
+vi.mock("@/app/lib/get-seat-availability", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("@/app/lib/get-seat-availability")>()),
+  getSeatAvailability: vi.fn(),
+}));
 
 const event: Event = {
   id: "22222222-2222-4222-8222-222222222222",
@@ -19,10 +28,12 @@ const event: Event = {
   venue: { name: "Recinto del backend", location: "Ciudad del backend" },
 };
 const getDetails = vi.mocked(eventsControllerGetDetails);
+const getSeats = vi.mocked(getSeatAvailability);
 
 beforeEach(() => {
   getDetails.mockReset();
   vi.mocked(purchaseTicket).mockReset();
+  getSeats.mockReset().mockResolvedValue({ status: "success", seats: [] });
 });
 
 describe("EventContent", () => {
@@ -237,5 +248,113 @@ describe("EventContent", () => {
       pending.reject(new DOMException("Aborted", "AbortError"));
       await pending.promise.catch(() => undefined);
     });
+  });
+});
+
+describe("seat availability", () => {
+  const seats: Seat[] = [
+    {
+      ticketId: "aaaaaaaa-1111-4111-8111-111111111111",
+      seatNumber: "A-1",
+      status: SeatStatus.Available,
+    },
+    {
+      ticketId: "aaaaaaaa-2222-4222-8222-222222222222",
+      seatNumber: "A-2",
+      status: SeatStatus.Available,
+    },
+    {
+      ticketId: "bbbbbbbb-3333-4333-8333-333333333333",
+      seatNumber: "B-1",
+      status: SeatStatus.Reserved,
+    },
+    {
+      ticketId: "cccccccc-4444-4444-8444-444444444444",
+      seatNumber: "C-1",
+      status: SeatStatus.Sold,
+    },
+  ];
+
+  async function renderPurchase() {
+    getDetails.mockResolvedValueOnce(event);
+    render(
+      await PurchasePage({ params: Promise.resolve({ eventId: event.id }) }),
+    );
+  }
+
+  it("renders each seat with its number and status color", async () => {
+    getSeats.mockResolvedValueOnce({ status: "success", seats });
+    await renderPurchase();
+
+    expect(
+      await screen.findByRole("radiogroup", { name: "Elige tu asiento" }),
+    ).toBeInTheDocument();
+    const available = screen.getByRole("radio", { name: "A-1, Disponible" });
+    expect(available).toBeEnabled();
+    expect(available.closest("label")).toHaveClass("border-emerald-500");
+    expect(
+      screen.getByText("A-1", { selector: "label span" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("radio", { name: "B-1, Reservado" }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("radio", { name: "B-1, Reservado" }).closest("label"),
+    ).toHaveClass("border-amber-500");
+    expect(screen.getByRole("radio", { name: "C-1, Vendido" })).toBeDisabled();
+    expect(
+      screen.getByRole("radio", { name: "C-1, Vendido" }).closest("label"),
+    ).toHaveClass("border-rose-500");
+  });
+
+  it("keeps a single seat selected when the buyer picks another", async () => {
+    const user = userEvent.setup();
+    getSeats.mockResolvedValueOnce({ status: "success", seats });
+    await renderPurchase();
+
+    const first = await screen.findByRole("radio", {
+      name: "A-1, Disponible",
+    });
+    const second = screen.getByRole("radio", { name: "A-2, Disponible" });
+
+    await user.click(first);
+    expect(first).toBeChecked();
+    expect(screen.getByText("Asiento A-1 seleccionado.")).toBeInTheDocument();
+
+    await user.click(second);
+    expect(first).not.toBeChecked();
+    expect(second).toBeChecked();
+    expect(screen.getByText("Asiento A-2 seleccionado.")).toBeInTheDocument();
+  });
+
+  it("informs when the booking service does not know the event", async () => {
+    getSeats.mockResolvedValueOnce({ status: "missing" });
+    await renderPurchase();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No encontramos los asientos de este evento.",
+    );
+    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("form", { name: "Datos del comprador" }),
+    ).toBeInTheDocument();
+  });
+
+  it("retries the seat request when loading fails", async () => {
+    const user = userEvent.setup();
+    getSeats
+      .mockResolvedValueOnce({ status: "error" })
+      .mockResolvedValueOnce({ status: "success", seats });
+    await renderPurchase();
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "No se pudieron cargar los asientos.",
+    );
+    await user.click(screen.getByRole("button", { name: "Reintentar" }));
+
+    expect(getSeats).toHaveBeenCalledTimes(2);
+    expect(
+      await screen.findByRole("radio", { name: "A-1, Disponible" }),
+    ).toBeEnabled();
   });
 });

@@ -3,22 +3,15 @@
   "info": {
     "title": "BookingService API (Sap-atitos)",
     "description": "Backend API responsible for ticket purchasing, idempotency handling, and issuance (MVP-02).",
-    "version": "v1-commit-cf0898eb792920a40079504d353f4bcc987cf0fa"
+    "version": "v1"
   },
   "paths": {
-    "/test/error": {
-      "get": {
-        "tags": ["BookingService.Api"],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/": {
       "get": {
-        "tags": ["BookingService.Api"],
+        "tags": ["System"],
+        "summary": "Root API status",
+        "description": "Returns basic API identification and online status.",
+        "operationId": "GetApiRoot",
         "responses": {
           "200": {
             "description": "OK"
@@ -28,7 +21,10 @@
     },
     "/health": {
       "get": {
-        "tags": ["BookingService.Api"],
+        "tags": ["System"],
+        "summary": "Health check probe",
+        "description": "Liveness and readiness probe reporting service health.",
+        "operationId": "GetHealthStatus",
         "responses": {
           "200": {
             "description": "OK"
@@ -37,12 +33,186 @@
       }
     },
     "/events/{eventId}/tickets": {
-      "post": {
-        "tags": ["BookingService.Api"],
+      "get": {
+        "tags": ["Tickets"],
+        "summary": "Retrieves all available seats for the specified event.",
+        "description": "Returns all seats currently in 'Available' status and not reserved by a buyer for the specified event ID.",
+        "operationId": "GetAvailableTickets",
         "parameters": [
           {
             "name": "eventId",
             "in": "path",
+            "description": "The unique identifier of the event.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of available seats successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SeatAvailabilityDto"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event was not found."
+          }
+        }
+      }
+    },
+    "/events/{eventId}/tickets/{ticketId}/availability": {
+      "get": {
+        "tags": ["Tickets"],
+        "summary": "Checks the current availability of a specific seat in an event.",
+        "description": "Checks whether a specific seat in an event is available, reserved or sold.",
+        "operationId": "CheckTicketAvailability",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "The unique identifier of the event.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "The unique identifier of the ticket (seat).",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Seat availability status successfully retrieved.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeatAvailabilityDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Event or ticket was not found."
+          }
+        }
+      }
+    },
+    "/events/{eventId}/tickets/{ticketId}/reserve": {
+      "post": {
+        "tags": ["Tickets"],
+        "summary": "Reserves (locks) a specific seat for the buyer during 10 minutes.",
+        "description": "Locks a seat for the buyer identified by email for 10 minutes. Reserving again with the same email renews the reservation. The seat must be reserved before it can be purchased.",
+        "operationId": "ReserveSeat",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "The unique identifier of the event.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "The unique identifier of the ticket (seat) to reserve.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Reservation request containing the buyer's full name and email.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/ReserveSeatRequest"
+                  }
+                ],
+                "description": "Body of POST /events/{eventId}/tickets/{ticketId}/reserve. The email identifies the buyer\r\nwho will hold the seat; the purchase must be made with the same email."
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Seat reserved (or reservation renewed) for the buyer.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SeatReservationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validation failed."
+          },
+          "404": {
+            "description": "Event or ticket not found in catalog."
+          },
+          "409": {
+            "description": "Seat is already sold or reserved by another buyer."
+          },
+          "500": {
+            "description": "Unhandled server error captured by global exception middleware.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/events/{eventId}/tickets/{ticketId}/purchase": {
+      "post": {
+        "tags": ["Tickets"],
+        "summary": "Purchases a specific seat for an event with idempotency protection.",
+        "description": "Purchases a seat previously reserved with the same email. Requires an X-Idempotency-Key header. If the key was already used for this seat, safely returns the existing ticket (200 OK).",
+        "operationId": "PurchaseTicket",
+        "parameters": [
+          {
+            "name": "eventId",
+            "in": "path",
+            "description": "The unique identifier of the event.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          },
+          {
+            "name": "ticketId",
+            "in": "path",
+            "description": "The unique identifier of the ticket (seat) to purchase.",
             "required": true,
             "schema": {
               "type": "string",
@@ -52,6 +222,7 @@
           {
             "name": "X-Idempotency-Key",
             "in": "header",
+            "description": "Client-provided UUID in the X-Idempotency-Key header. Required to ensure safe replay.",
             "schema": {
               "type": "string",
               "format": "uuid"
@@ -59,18 +230,63 @@
           }
         ],
         "requestBody": {
+          "description": "Purchase request containing attendee's full name and email.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/PurchaseTicketCommand"
+                "allOf": [
+                  {
+                    "$ref": "#/components/schemas/PurchaseTicketRequest"
+                  }
+                ],
+                "description": "Body of POST /events/{eventId}/tickets/{ticketId}/purchase. Both fields are required;\r\nif either is missing or blank the request is rejected with 400 Bad Request."
               }
             }
           },
           "required": true
         },
         "responses": {
+          "201": {
+            "description": "New ticket successfully purchased and issued.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponse"
+                }
+              }
+            }
+          },
           "200": {
-            "description": "OK"
+            "description": "Ticket successfully returned on idempotent replay of an already processed purchase.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validation failed or X-Idempotency-Key header is missing/invalid."
+          },
+          "403": {
+            "description": "The seat is not reserved by this buyer, or the reservation expired."
+          },
+          "404": {
+            "description": "Event or ticket not found in catalog."
+          },
+          "409": {
+            "description": "Seat is already sold or the idempotency key was previously used with different details."
+          },
+          "500": {
+            "description": "Unhandled server error captured by global exception middleware.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
           }
         }
       }
@@ -78,37 +294,187 @@
   },
   "components": {
     "schemas": {
-      "PurchaseTicketCommand": {
+      "ErrorResponse": {
+        "required": ["message", "statusCode", "timestampUtc", "traceId"],
         "type": "object",
         "properties": {
-          "eventId": {
-            "type": "string",
-            "format": "uuid"
+          "statusCode": {
+            "type": "integer",
+            "format": "int32"
           },
-          "ticketId": {
-            "type": "string",
-            "format": "uuid"
+          "message": {
+            "type": "string"
           },
-          "fullName": {
+          "details": {
             "type": "string",
             "nullable": true
+          },
+          "traceId": {
+            "type": "string"
+          },
+          "timestampUtc": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "errors": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Standardized JSON response payload for API errors."
+      },
+      "PurchaseTicketRequest": {
+        "required": ["email", "fullName"],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "Full name of the ticket purchaser (e.g., 'Jane Doe')."
           },
           "email": {
             "type": "string",
-            "nullable": true
-          },
-          "idempotencyKey": {
-            "type": "string",
-            "format": "uuid"
+            "description": "Valid RFC 5321 email address for order confirmation (e.g., 'jane.doe@example.com')."
           }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "description": "Body of POST /events/{eventId}/tickets/{ticketId}/purchase. Both fields are required;\r\nif either is missing or blank the request is rejected with 400 Bad Request."
+      },
+      "ReserveSeatRequest": {
+        "required": ["email", "fullName"],
+        "type": "object",
+        "properties": {
+          "fullName": {
+            "type": "string",
+            "description": "Full name of the buyer (e.g., 'Jane Doe')."
+          },
+          "email": {
+            "type": "string",
+            "description": "Email of the buyer; it must match the one used to purchase the seat."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Body of POST /events/{eventId}/tickets/{ticketId}/reserve. The email identifies the buyer\r\nwho will hold the seat; the purchase must be made with the same email."
+      },
+      "SeatAvailabilityDto": {
+        "required": ["seatNumber", "status", "ticketId"],
+        "type": "object",
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "description": "Unique identifier of the ticket (seat).",
+            "format": "uuid"
+          },
+          "seatNumber": {
+            "type": "string",
+            "description": "Designated seat label within the event venue (e.g., 'A-1')."
+          },
+          "status": {
+            "type": "string",
+            "description": "Current availability status of the seat ('Available', 'Reserved' or 'Sold')."
+          }
+        },
+        "additionalProperties": false,
+        "description": "Unified DTO representing seat availability (SP-04 / ALIGN-02 / APP-01 / APP-02).\r\nMatches the agreed seat contract with Frontend: ticketId, seatNumber, and status."
+      },
+      "SeatReservationResponse": {
+        "required": [
+          "email",
+          "eventId",
+          "expiresAtUtc",
+          "seatNumber",
+          "ticketId"
+        ],
+        "type": "object",
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "description": "Unique identifier of the reserved ticket (seat).",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Unique identifier of the event.",
+            "format": "uuid"
+          },
+          "seatNumber": {
+            "type": "string",
+            "description": "Designated seat number (e.g., 'A-1')."
+          },
+          "email": {
+            "type": "string",
+            "description": "Email of the buyer holding the reservation."
+          },
+          "expiresAtUtc": {
+            "type": "string",
+            "description": "UTC time when the reservation expires and other buyers can take the seat.",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Seat locked for a buyer until BookingService.Api.Contracts.SeatReservationResponse.ExpiresAtUtc."
+      },
+      "TicketResponse": {
+        "required": [
+          "email",
+          "eventId",
+          "fullName",
+          "seatNumber",
+          "ticketCode",
+          "ticketId"
+        ],
+        "type": "object",
+        "properties": {
+          "ticketId": {
+            "type": "string",
+            "description": "Unique identifier of the ticket.",
+            "format": "uuid"
+          },
+          "eventId": {
+            "type": "string",
+            "description": "Unique identifier of the event.",
+            "format": "uuid"
+          },
+          "seatNumber": {
+            "type": "string",
+            "description": "Designated seat number (e.g., 'A-1')."
+          },
+          "fullName": {
+            "type": "string",
+            "description": "Full name of the ticket holder."
+          },
+          "email": {
+            "type": "string",
+            "description": "Email address associated with the purchase."
+          },
+          "ticketCode": {
+            "type": "string",
+            "description": "Unique ticket validation code (format: 'TK-{GUID:N}')."
+          },
+          "purchasedAtUtc": {
+            "type": "string",
+            "description": "UTC timestamp when the ticket was purchased.",
+            "format": "date-time",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Response payload returning issued ticket details."
       }
     }
   },
   "tags": [
     {
-      "name": "BookingService.Api"
+      "name": "System"
+    },
+    {
+      "name": "Tickets"
     }
   ]
 }
