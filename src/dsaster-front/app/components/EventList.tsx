@@ -15,15 +15,20 @@ export default function EventList({
       aria-labelledby="events-heading"
       className="mx-auto max-w-4xl px-6 py-12 sm:py-16"
     >
-      <div className="mb-8 flex items-baseline justify-between border-b border-brand-border pb-4">
-        <h2
-          id="events-heading"
-          className="font-display text-2xl font-extrabold tracking-tight text-brand-ink sm:text-3xl"
-        >
-          Próximos Eventos
-        </h2>
-        <span className="text-sm font-medium text-orange-700">
-          {`${events.length} ${events.length === 1 ? "evento" : "eventos"} para la búsqueda "${searchedName}"`}{" "}
+      <div className="mb-8 flex items-baseline justify-between gap-4 border-b border-brand-border pb-4">
+        <div>
+          <h2
+            id="events-heading"
+            className="font-display text-2xl font-extrabold tracking-tight text-brand-ink sm:text-3xl"
+          >
+            Próximos Eventos
+          </h2>
+          <p className="mt-1 text-sm text-brand-muted">
+            Resultados para «{searchedName}»
+          </p>
+        </div>
+        <span className="shrink-0 text-sm font-medium text-brand-muted">
+          {events.length} {events.length === 1 ? "evento" : "eventos"}
         </span>
       </div>
 
