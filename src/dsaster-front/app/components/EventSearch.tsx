@@ -24,6 +24,7 @@ export default function EventSearch() {
     const controller = new AbortController();
     requestControllerRef.current = controller;
     setState({ status: "loading" });
+    setSearchedName(name);
 
     void searchEvents(name, controller.signal).then((result) => {
       if (!controller.signal.aborted) {
@@ -38,7 +39,6 @@ export default function EventSearch() {
 
   const handleSearch = () => {
     const name = query.trim();
-    setSearchedName(name);
     if (name) {
       findEvents(name);
     }
@@ -71,7 +71,7 @@ export default function EventSearch() {
         )}
         {state.status === "success" && (
           <EventList
-            events={state.status === "success" ? state.events : []}
+            events={state.events}
             searchedName={searchedName}
           />
         )}
