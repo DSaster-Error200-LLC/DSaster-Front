@@ -70,10 +70,7 @@ export default function EventSearch() {
           </p>
         )}
         {state.status === "success" && (
-          <EventList
-            events={state.events}
-            searchedName={searchedName}
-          />
+          <EventList events={state.events} searchedName={searchedName} />
         )}
       </div>
     </>
