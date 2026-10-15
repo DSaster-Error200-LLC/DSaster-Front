@@ -20,7 +20,6 @@ describe("getSeatAvailability", () => {
       { ticketId: "seat-1", seatNumber: "A-1", status: "Available" },
       { ticketId: "seat-2", seatNumber: "B-2", status: "Reserved" },
       { ticketId: "seat-3", seatNumber: "C-3", status: "Sold" },
-      { ticketId: "seat-4", seatNumber: null, status: null },
     ]);
     const { signal } = new AbortController();
 
@@ -33,7 +32,6 @@ describe("getSeatAvailability", () => {
         { ticketId: "seat-1", seatNumber: "A-1", status: SeatStatus.Available },
         { ticketId: "seat-2", seatNumber: "B-2", status: SeatStatus.Reserved },
         { ticketId: "seat-3", seatNumber: "C-3", status: SeatStatus.Sold },
-        { ticketId: "seat-4", seatNumber: "", status: null },
       ],
     });
   });

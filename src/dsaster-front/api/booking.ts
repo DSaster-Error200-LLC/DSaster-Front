@@ -15,14 +15,12 @@ export type ErrorResponseErrors = {[key: string]: string[]} | null;
  * Standardized JSON response payload for API errors.
  */
 export interface ErrorResponse {
-  statusCode?: number;
-  /** @nullable */
-  message?: string | null;
+  statusCode: number;
+  message: string;
   /** @nullable */
   details?: string | null;
-  /** @nullable */
-  traceId?: string | null;
-  timestampUtc?: string;
+  traceId: string;
+  timestampUtc: string;
   /** @nullable */
   errors?: ErrorResponseErrors;
 }
@@ -32,16 +30,10 @@ export interface ErrorResponse {
  * if either is missing or blank the request is rejected with 400 Bad Request.
  */
 export interface PurchaseTicketRequest {
-  /**
-     * Full name of the ticket purchaser (e.g., 'Jane Doe').
-     * @nullable
-     */
-  fullName?: string | null;
-  /**
-     * Valid RFC 5321 email address for order confirmation (e.g., 'jane.doe@example.com').
-     * @nullable
-     */
-  email?: string | null;
+  /** Full name of the ticket purchaser (e.g., 'Jane Doe'). */
+  fullName: string;
+  /** Valid RFC 5321 email address for order confirmation (e.g., 'jane.doe@example.com'). */
+  email: string;
 }
 
 /**
@@ -49,16 +41,10 @@ export interface PurchaseTicketRequest {
  * who will hold the seat; the purchase must be made with the same email.
  */
 export interface ReserveSeatRequest {
-  /**
-     * Full name of the buyer (e.g., 'Jane Doe').
-     * @nullable
-     */
-  fullName?: string | null;
-  /**
-     * Email of the buyer; it must match the one used to purchase the seat.
-     * @nullable
-     */
-  email?: string | null;
+  /** Full name of the buyer (e.g., 'Jane Doe'). */
+  fullName: string;
+  /** Email of the buyer; it must match the one used to purchase the seat. */
+  email: string;
 }
 
 /**
@@ -67,17 +53,11 @@ export interface ReserveSeatRequest {
  */
 export interface SeatAvailabilityDto {
   /** Unique identifier of the ticket (seat). */
-  ticketId?: string;
-  /**
-     * Designated seat label within the event venue (e.g., 'A-1').
-     * @nullable
-     */
-  seatNumber?: string | null;
-  /**
-     * Current availability status of the seat ('Available', 'Reserved' or 'Sold').
-     * @nullable
-     */
-  status?: string | null;
+  ticketId: string;
+  /** Designated seat label within the event venue (e.g., 'A-1'). */
+  seatNumber: string;
+  /** Current availability status of the seat ('Available', 'Reserved' or 'Sold'). */
+  status: string;
 }
 
 /**
@@ -85,21 +65,15 @@ export interface SeatAvailabilityDto {
  */
 export interface SeatReservationResponse {
   /** Unique identifier of the reserved ticket (seat). */
-  ticketId?: string;
+  ticketId: string;
   /** Unique identifier of the event. */
-  eventId?: string;
-  /**
-     * Designated seat number (e.g., 'A-1').
-     * @nullable
-     */
-  seatNumber?: string | null;
-  /**
-     * Email of the buyer holding the reservation.
-     * @nullable
-     */
-  email?: string | null;
+  eventId: string;
+  /** Designated seat number (e.g., 'A-1'). */
+  seatNumber: string;
+  /** Email of the buyer holding the reservation. */
+  email: string;
   /** UTC time when the reservation expires and other buyers can take the seat. */
-  expiresAtUtc?: string;
+  expiresAtUtc: string;
 }
 
 /**
@@ -107,29 +81,17 @@ export interface SeatReservationResponse {
  */
 export interface TicketResponse {
   /** Unique identifier of the ticket. */
-  ticketId?: string;
+  ticketId: string;
   /** Unique identifier of the event. */
-  eventId?: string;
-  /**
-     * Designated seat number (e.g., 'A-1').
-     * @nullable
-     */
-  seatNumber?: string | null;
-  /**
-     * Full name of the ticket holder.
-     * @nullable
-     */
-  fullName?: string | null;
-  /**
-     * Email address associated with the purchase.
-     * @nullable
-     */
-  email?: string | null;
-  /**
-     * Unique ticket validation code (format: 'TK-{GUID:N}').
-     * @nullable
-     */
-  ticketCode?: string | null;
+  eventId: string;
+  /** Designated seat number (e.g., 'A-1'). */
+  seatNumber: string;
+  /** Full name of the ticket holder. */
+  fullName: string;
+  /** Email address associated with the purchase. */
+  email: string;
+  /** Unique ticket validation code (format: 'TK-{GUID:N}'). */
+  ticketCode: string;
   /**
      * UTC timestamp when the ticket was purchased.
      * @nullable

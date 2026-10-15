@@ -2,9 +2,8 @@ import { isAxiosError } from "axios";
 import { getAvailableTickets, type SeatAvailabilityDto } from "@/api/booking";
 
 /**
- * The BookingService OpenAPI spec (v0.0.0-beta) documents `status` as a plain
- * nullable string whose values are 'Available', 'Reserved' or 'Sold', so Orval
- * cannot generate a union for it.
+ * BookingService documents `status` as a plain string whose values are
+ * 'Available', 'Reserved' or 'Sold', so Orval cannot generate a union for it.
  * TODO(BookingService): drop the cast below once the spec declares `status`
  * as an enum and Orval generates the type for us.
  */
@@ -17,7 +16,7 @@ export enum SeatStatus {
 export interface Seat {
   readonly ticketId: string;
   readonly seatNumber: string;
-  readonly status: SeatStatus | null;
+  readonly status: SeatStatus;
 }
 
 export type GetSeatAvailabilityResult =
@@ -44,10 +43,10 @@ export async function getSeatAvailability(
 
 function toSeat(seat: SeatAvailabilityDto): Seat {
   return {
-    ticketId: seat.ticketId ?? "",
-    seatNumber: seat.seatNumber ?? "",
-    // `status` is an untyped string in the spec; cast it to the enum. Null or
-    // unexpected values are rendered as unknown and cannot be selected.
-    status: (seat.status ?? null) as SeatStatus | null,
+    ticketId: seat.ticketId,
+    seatNumber: seat.seatNumber,
+    // The spec types `status` as a plain string; cast it to the documented
+    // enum values.
+    status: seat.status as SeatStatus,
   };
 }

@@ -1,4 +1,5 @@
 import type { SeatsState } from "@/app/events/[eventId]/purchase/hooks/useSeats";
+import { assertNever } from "@/app/lib/assert-never";
 import { SeatStatus, type Seat } from "@/app/lib/get-seat-availability";
 
 interface SeatMapProps {
@@ -20,7 +21,7 @@ const legendStatuses = [
   SeatStatus.Sold,
 ] as const;
 
-function statusStyle(status: SeatStatus | null): SeatStatusStyle {
+function statusStyle(status: SeatStatus): SeatStatusStyle {
   switch (status) {
     case SeatStatus.Available:
       return {
@@ -41,11 +42,7 @@ function statusStyle(status: SeatStatus | null): SeatStatusStyle {
         tile: "border-rose-500 bg-rose-50 text-rose-700",
       };
     default:
-      return {
-        label: "Sin estado",
-        dot: "bg-brand-muted",
-        tile: "border-brand-border bg-white text-brand-muted",
-      };
+      assertNever(status);
   }
 }
 
