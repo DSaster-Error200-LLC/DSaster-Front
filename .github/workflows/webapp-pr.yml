@@ -44,3 +44,29 @@ jobs:
 
       - name: Test
         run: pnpm test
+
+  generated-clients:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 'src/dsaster-front'
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: ./.github/actions/setup-webapp
+
+      - name: Verify generated Orval clients
+        run: |
+          cp api/search.ts "$RUNNER_TEMP/search.ts"
+          cp api/booking.ts "$RUNNER_TEMP/booking.ts"
+          pnpm api
+
+          if ! diff -u --strip-trailing-cr "$RUNNER_TEMP/search.ts" api/search.ts; then
+            echo "::error file=src/dsaster-front/api/search.ts::Generated Orval client is out of date. Regenerate and commit the updated file."
+            exit 1
+          fi
+
+          if ! diff -u --strip-trailing-cr "$RUNNER_TEMP/booking.ts" api/booking.ts; then
+            echo "::error file=src/dsaster-front/api/booking.ts::Generated Orval client is out of date. Regenerate and commit the updated file."
+            exit 1
+          fi
