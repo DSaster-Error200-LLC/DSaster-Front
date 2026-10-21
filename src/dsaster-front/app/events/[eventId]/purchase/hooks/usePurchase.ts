@@ -19,6 +19,7 @@ export function usePurchase(
   eventId: string,
   selectedSeat: Seat | null,
   onConflict: () => void,
+  onSuccess: (ticketId: string) => void,
 ) {
   const emailRef = useRef<HTMLInputElement>(null);
   const requestInFlightRef = useRef(false);
@@ -62,7 +63,7 @@ export function usePurchase(
     if (result.status === "conflict") {
       onConflict();
     } else if (result.status === "success") {
-      window.alert(`Asiento reservado. Ticket ID: ${result.ticketId}`);
+      onSuccess(result.ticketId);
     }
   }
 

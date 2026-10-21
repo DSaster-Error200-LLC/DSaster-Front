@@ -11,7 +11,7 @@ export async function reserveSeat(
   email: string,
 ): Promise<ReserveSeatResult> {
   try {
-    // shortcut: the backend requires a name; remove this placeholder when reservations accept email alone.
+    // TODO: the backend requires a name; remove this placeholder when reservations accept email alone.
     const reservation = await reserveSeatRequest(eventId, ticketId, {
       email,
       fullName: "Pendiente",

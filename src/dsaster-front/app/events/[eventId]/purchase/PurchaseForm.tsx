@@ -1,5 +1,3 @@
-"use client";
-
 import { useId } from "react";
 import {
   PurchaseError,
@@ -12,9 +10,13 @@ import { useSeats } from "./hooks/useSeats";
 
 interface PurchaseFormProps {
   readonly eventId: string;
+  readonly onSuccess: (ticketId: string) => void;
 }
 
-export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
+export default function PurchaseForm({
+  eventId,
+  onSuccess,
+}: Readonly<PurchaseFormProps>) {
   const id = useId();
   const seats = useSeats(eventId);
   const {
@@ -26,7 +28,7 @@ export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
     hasError,
     reserve,
     handleInputChange,
-  } = usePurchase(eventId, seats.selectedSeat, seats.retry);
+  } = usePurchase(eventId, seats.selectedSeat, seats.retry, onSuccess);
 
   return (
     <div lang="es" className="w-full">

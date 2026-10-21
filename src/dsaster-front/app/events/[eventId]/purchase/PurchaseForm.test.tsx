@@ -6,7 +6,7 @@ import {
   waitFor,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import PurchaseForm from "@/app/events/[eventId]/purchase/PurchaseForm";
 import {
   getSeatAvailability,
@@ -29,20 +29,17 @@ const seats: Seat[] = [
 ];
 const getSeats = vi.mocked(getSeatAvailability);
 const reserve = vi.mocked(reserveSeat);
-const showAlert = vi.fn();
+const onSuccess = vi.fn();
 
 beforeEach(() => {
   getSeats.mockReset().mockResolvedValue({ status: "success", seats });
   reserve.mockReset();
-  showAlert.mockReset();
-  vi.spyOn(window, "alert").mockImplementation(showAlert);
+  onSuccess.mockReset();
 });
-
-afterEach(() => vi.restoreAllMocks());
 
 async function fillReservation() {
   const user = userEvent.setup();
-  render(<PurchaseForm eventId="event-1" />);
+  render(<PurchaseForm eventId="event-1" onSuccess={onSuccess} />);
   await user.click(
     await screen.findByRole("radio", { name: "A-1, Disponible" }),
   );
@@ -56,7 +53,7 @@ async function fillReservation() {
 describe("seat reservation", () => {
   it("requires an available seat and a valid email before enabling submission", async () => {
     const user = userEvent.setup();
-    render(<PurchaseForm eventId="event-1" />);
+    render(<PurchaseForm eventId="event-1" onSuccess={onSuccess} />);
     const email = screen.getByLabelText("Correo electrónico");
     const button = screen.getByRole("button", { name: "Seleccionar Asiento" });
     const form = screen.getByRole("form");
@@ -86,9 +83,10 @@ describe("seat reservation", () => {
       fireEvent.submit(form);
       expect(reserve).not.toHaveBeenCalled();
     }
+    expect(onSuccess).not.toHaveBeenCalled();
   });
 
-  it("locks pending requests, prevents duplicate submission, and alerts the returned ticket ID", async () => {
+  it("locks pending requests, prevents duplicate submission, and calls onSuccess with the returned ticket ID", async () => {
     const pending = Promise.withResolvers<ReserveSeatResult>();
     reserve.mockReturnValueOnce(pending.promise);
     const user = await fillReservation();
@@ -111,16 +109,14 @@ describe("seat reservation", () => {
       "ticket-1",
       "ada@example.com",
     );
-    expect(showAlert).not.toHaveBeenCalled();
+    expect(onSuccess).not.toHaveBeenCalled();
 
     await act(async () => {
       pending.resolve({ status: "success", ticketId: "response-ticket-id" });
       await pending.promise;
     });
 
-    expect(showAlert).toHaveBeenCalledExactlyOnceWith(
-      "Asiento reservado. Ticket ID: response-ticket-id",
-    );
+    expect(onSuccess).toHaveBeenCalledExactlyOnceWith("response-ticket-id");
     expect(screen.getByRole("form")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Seleccionar Asiento" }),
@@ -154,9 +150,11 @@ describe("seat reservation", () => {
     ).toBeChecked();
     expect(reserve).toHaveBeenCalledTimes(1);
     expect(getSeats).toHaveBeenCalledTimes(1);
+    expect(onSuccess).not.toHaveBeenCalled();
 
     await user.click(button);
     expect(reserve).toHaveBeenCalledTimes(2);
+    expect(onSuccess).toHaveBeenCalledExactlyOnceWith("ticket-1");
     expect(screen.queryByRole("alert")).not.toBeInTheDocument();
   });
 
@@ -174,6 +172,7 @@ describe("seat reservation", () => {
     expect(error).toHaveTextContent(
       "El asiento fue ocupado mientras hacías tu selección. Elige otro asiento.",
     );
+    expect(onSuccess).not.toHaveBeenCalled();
     expect(button.nextElementSibling).toBe(error);
     expect(screen.getByText("Cargando asientos…")).toBeInTheDocument();
     expect(button).toBeDisabled();
@@ -226,6 +225,7 @@ describe("seat reservation", () => {
       ),
     ).toBeInTheDocument();
     expect(button).toBeDisabled();
+    expect(onSuccess).not.toHaveBeenCalled();
     expect(getSeats).toHaveBeenCalledTimes(2);
     await user.click(screen.getByRole("button", { name: "Reintentar" }));
     await waitFor(() => expect(getSeats).toHaveBeenCalledTimes(3));

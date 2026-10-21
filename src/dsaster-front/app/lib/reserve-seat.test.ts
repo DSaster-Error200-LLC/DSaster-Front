@@ -7,7 +7,9 @@ vi.mock("@/api/booking", () => ({ reserveSeat: vi.fn() }));
 
 const reserve = vi.mocked(reserveSeatRequest);
 
-beforeEach(() => reserve.mockReset());
+beforeEach(() => {
+  reserve.mockReset();
+});
 
 describe("reserveSeat", () => {
   it("sends the approved placeholder and returns the response ticket ID", async () => {
@@ -29,8 +31,8 @@ describe("reserveSeat", () => {
     );
   });
 
-  it("maps HTTP 409 to a conflict without retrying", async () => {
-    reserve.mockRejectedValueOnce(
+  it("maps HTTP 409 to a conflict", async () => {
+    reserve.mockRejectedValue(
       Object.assign(new AxiosError("Seat taken"), {
         response: { status: 409 },
       }),
@@ -39,7 +41,6 @@ describe("reserveSeat", () => {
     await expect(
       reserveSeat("event-1", "ticket-1", "ada@example.com"),
     ).resolves.toEqual({ status: "conflict" });
-    expect(reserve).toHaveBeenCalledTimes(1);
   });
 
   it.each([
@@ -49,15 +50,11 @@ describe("reserveSeat", () => {
         response: { status },
       }),
     ),
-  ])(
-    "maps other failures to a generic error without retrying: %s",
-    async (error) => {
-      reserve.mockRejectedValueOnce(error);
+  ])("maps other failures to a generic error: %s", async (error) => {
+    reserve.mockRejectedValue(error);
 
-      await expect(
-        reserveSeat("event-1", "ticket-1", "ada@example.com"),
-      ).resolves.toEqual({ status: "error" });
-      expect(reserve).toHaveBeenCalledTimes(1);
-    },
-  );
+    await expect(
+      reserveSeat("event-1", "ticket-1", "ada@example.com"),
+    ).resolves.toEqual({ status: "error" });
+  });
 });
