@@ -11,10 +11,10 @@ import {
   SeatStatus,
   type Seat,
 } from "@/app/lib/get-seat-availability";
-import { purchaseTicket } from "@/app/lib/purchase-ticket";
+import { reserveSeat } from "@/app/lib/reserve-seat";
 
 vi.mock("@/api/search", () => ({ eventsControllerGetDetails: vi.fn() }));
-vi.mock("@/app/lib/purchase-ticket", () => ({ purchaseTicket: vi.fn() }));
+vi.mock("@/app/lib/reserve-seat", () => ({ reserveSeat: vi.fn() }));
 vi.mock("@/app/lib/get-seat-availability", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/app/lib/get-seat-availability")>()),
   getSeatAvailability: vi.fn(),
@@ -32,7 +32,7 @@ const getSeats = vi.mocked(getSeatAvailability);
 
 beforeEach(() => {
   getDetails.mockReset();
-  vi.mocked(purchaseTicket).mockReset();
+  vi.mocked(reserveSeat).mockReset();
   getSeats.mockReset().mockResolvedValue({ status: "success", seats: [] });
 });
 
@@ -48,7 +48,7 @@ describe("EventContent", () => {
       expect(screen.queryByText(event.name)).not.toBeInTheDocument();
       expect(screen.queryByRole("form")).not.toBeInTheDocument();
       expect(
-        screen.queryByRole("link", { name: "Comprar Ticket" }),
+        screen.queryByRole("link", { name: "Seleccionar Asiento" }),
       ).not.toBeInTheDocument();
       const signal = getDetails.mock.calls[0][1]?.signal;
       expect(signal).toBeInstanceOf(AbortSignal);
@@ -74,7 +74,7 @@ describe("EventContent", () => {
     expect(screen.getByText(event.venue.name)).toBeInTheDocument();
     expect(screen.getByText(event.venue.location)).toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "Comprar Ticket" }),
+      screen.getByRole("link", { name: "Seleccionar Asiento" }),
     ).toHaveAttribute("href", `/events/${event.id}/purchase`);
     expect(
       screen.getByRole("link", { name: "Volver a eventos" }),
@@ -87,7 +87,17 @@ describe("EventContent", () => {
   it("renders direct purchase summary and submits the returned event ID", async () => {
     const user = userEvent.setup();
     getDetails.mockResolvedValueOnce(event);
-    vi.mocked(purchaseTicket).mockResolvedValueOnce(true);
+    vi.mocked(reserveSeat).mockResolvedValueOnce({ status: "error" });
+    getSeats.mockResolvedValueOnce({
+      status: "success",
+      seats: [
+        {
+          ticketId: "ticket-1",
+          seatNumber: "A-1",
+          status: SeatStatus.Available,
+        },
+      ],
+    });
     const requestedId = "33333333-3333-4333-8333-333333333333";
 
     render(
@@ -112,18 +122,22 @@ describe("EventContent", () => {
     ).toBeInTheDocument();
     expect(getDetails).toHaveBeenCalledWith(requestedId, expect.any(Object));
 
-    await user.type(screen.getByLabelText("Nombre completo"), "Ada Lovelace");
+    expect(screen.queryByLabelText("Nombre completo")).not.toBeInTheDocument();
+    await user.click(
+      await screen.findByRole("radio", { name: "A-1, Disponible" }),
+    );
     await user.type(
       screen.getByLabelText("Correo electrónico"),
       "ada@example.com",
     );
-    await user.click(screen.getByRole("button", { name: "Comprar Ticket" }));
+    await user.click(
+      screen.getByRole("button", { name: "Seleccionar Asiento" }),
+    );
 
-    expect(purchaseTicket).toHaveBeenCalledWith(
+    expect(reserveSeat).toHaveBeenCalledWith(
       event.id,
-      "Ada Lovelace",
+      "ticket-1",
       "ada@example.com",
-      expect.any(String),
     );
   });
 

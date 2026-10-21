@@ -22,7 +22,7 @@ export default function PurchaseDetails({
       </Link>
 
       <h1 className="mt-8 font-display text-4xl font-extrabold tracking-tight text-brand-ink sm:text-5xl">
-        Comprar Ticket
+        Seleccionar Asiento
       </h1>
 
       <section

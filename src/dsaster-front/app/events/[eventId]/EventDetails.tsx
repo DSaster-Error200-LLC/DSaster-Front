@@ -78,7 +78,7 @@ export default function EventDetails({ event }: Readonly<EventDetailsProps>) {
             href={`/events/${event.id}/purchase`}
             className="w-full rounded-xl bg-brand-rust px-8 py-4 text-center font-display text-base font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust sm:max-w-sm"
           >
-            Comprar Ticket
+            Seleccionar Asiento
           </Link>
         </section>
       </div>
