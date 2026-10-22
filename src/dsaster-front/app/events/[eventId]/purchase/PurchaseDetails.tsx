@@ -22,7 +22,7 @@ export default function PurchaseDetails({
       </Link>
 
       <h1 className="mt-8 font-display text-4xl font-extrabold tracking-tight text-brand-ink sm:text-5xl">
-        Comprar Ticket
+        Seleccionar Asiento
       </h1>
 
       <section
@@ -45,7 +45,13 @@ export default function PurchaseDetails({
         <p className="text-sm text-brand-muted">{event.venue.location}</p>
       </section>
 
-      <PurchaseForm key={event.id} eventId={event.id} />
+      <PurchaseForm
+        key={event.id}
+        eventId={event.id}
+        onSuccess={(ticketId) => {
+          window.alert(`Asiento reservado. Ticket ID: ${ticketId}`);
+        }}
+      />
     </article>
   );
 }

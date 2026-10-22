@@ -1,11 +1,8 @@
-"use client";
-
 import { useId } from "react";
 import {
   PurchaseError,
   PurchaseFormField,
   PurchaseSubmitButton,
-  PurchaseSuccess,
   SeatMap,
 } from "./components";
 import { usePurchase } from "./hooks/usePurchase";
@@ -13,91 +10,79 @@ import { useSeats } from "./hooks/useSeats";
 
 interface PurchaseFormProps {
   readonly eventId: string;
+  readonly onSuccess: (ticketId: string) => void;
 }
 
-export default function PurchaseForm({ eventId }: Readonly<PurchaseFormProps>) {
+export default function PurchaseForm({
+  eventId,
+  onSuccess,
+}: Readonly<PurchaseFormProps>) {
   const id = useId();
   const seats = useSeats(eventId);
   const {
-    fullNameRef,
     emailRef,
     status,
-    errors,
+    emailError,
+    isLocked,
+    canReserve,
     hasError,
-    purchase,
+    reserve,
     handleInputChange,
-  } = usePurchase(eventId);
-
-  const fields = [
-    {
-      name: "fullName",
-      label: "Nombre completo",
-      type: "text",
-      autoComplete: "name",
-      ref: fullNameRef,
-    },
-    {
-      name: "email",
-      label: "Correo electrónico",
-      type: "email",
-      autoComplete: "email",
-      ref: emailRef,
-    },
-  ] as const;
+  } = usePurchase(eventId, seats.selectedSeat, seats.retry, onSuccess);
 
   return (
     <div lang="es" className="w-full">
-      {status !== "success" && (
-        <>
-          <SeatMap
-            state={seats.state}
-            selectedSeat={seats.selectedSeat}
-            onSelect={seats.selectSeat}
-            onRetry={seats.retry}
-          />
+      <SeatMap
+        state={seats.state}
+        selectedSeat={seats.selectedSeat}
+        onSelect={seats.selectSeat}
+        onRetry={seats.retry}
+        disabled={isLocked}
+      />
 
-          <form
-            noValidate
-            aria-labelledby={`${id}-heading`}
-            aria-busy={status === "pending"}
-            className="space-y-5"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void purchase();
-            }}
-          >
-            <h2
-              id={`${id}-heading`}
-              className="font-display text-2xl font-bold text-brand-ink"
-            >
-              Datos del comprador
-            </h2>
+      <form
+        noValidate
+        aria-labelledby={`${id}-heading`}
+        aria-busy={status === "pending"}
+        className="space-y-5"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void reserve();
+        }}
+      >
+        <h2
+          id={`${id}-heading`}
+          className="font-display text-2xl font-bold text-brand-ink"
+        >
+          Datos del comprador
+        </h2>
 
-            {fields.map(({ name, label, type, autoComplete, ref }) => (
-              <PurchaseFormField
-                key={name}
-                id={id}
-                name={name}
-                label={label}
-                type={type}
-                autoComplete={autoComplete}
-                inputRef={ref}
-                disabled={status === "pending"}
-                error={errors[name]}
-                onChange={(event) =>
-                  handleInputChange(name, event.currentTarget)
-                }
-              />
-            ))}
+        <PurchaseFormField
+          id={id}
+          name="email"
+          label="Correo electrónico"
+          type="email"
+          autoComplete="email"
+          inputRef={emailRef}
+          disabled={isLocked}
+          error={emailError ?? undefined}
+          onChange={(event) => handleInputChange(event.currentTarget)}
+        />
 
-            <PurchaseError hasError={hasError} />
+        <PurchaseSubmitButton
+          isPending={status === "pending"}
+          disabled={!canReserve}
+        />
 
-            <PurchaseSubmitButton isPending={status === "pending"} />
-          </form>
-        </>
-      )}
-
-      <PurchaseSuccess isSuccess={status === "success"} />
+        <PurchaseError
+          hasError={hasError}
+          message={
+            status === "conflict"
+              ? "El asiento fue ocupado mientras hacías tu selección. Elige otro asiento."
+              : "No se pudo reservar el asiento. Inténtalo de nuevo."
+          }
+        />
+      </form>
     </div>
   );
 }

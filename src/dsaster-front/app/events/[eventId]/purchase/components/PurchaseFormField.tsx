@@ -41,6 +41,7 @@ export function PurchaseFormField({
         type={type}
         autoComplete={autoComplete}
         required
+        maxLength={type === "email" ? 254 : undefined}
         disabled={disabled}
         aria-invalid={Boolean(error)}
         aria-describedby={error ? errorId : undefined}

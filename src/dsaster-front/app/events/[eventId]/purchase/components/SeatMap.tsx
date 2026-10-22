@@ -7,6 +7,7 @@ interface SeatMapProps {
   readonly selectedSeat: Seat | null;
   readonly onSelect: (seat: Seat) => void;
   readonly onRetry: () => void;
+  readonly disabled: boolean;
 }
 
 interface SeatStatusStyle {
@@ -51,6 +52,7 @@ export function SeatMap({
   selectedSeat,
   onSelect,
   onRetry,
+  disabled,
 }: Readonly<SeatMapProps>) {
   return (
     <section
@@ -82,6 +84,7 @@ export function SeatMap({
           <button
             type="button"
             onClick={onRetry}
+            disabled={disabled}
             className="mt-4 rounded-xl bg-brand-rust px-6 py-3 font-display font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust"
           >
             Reintentar
@@ -118,7 +121,8 @@ export function SeatMap({
               {state.seats.map((seat) => {
                 const style = statusStyle(seat.status);
                 const isSelected = seat.ticketId === selectedSeat?.ticketId;
-                const isAvailable = seat.status === SeatStatus.Available;
+                const isAvailable =
+                  !disabled && seat.status === SeatStatus.Available;
 
                 return (
                   <label

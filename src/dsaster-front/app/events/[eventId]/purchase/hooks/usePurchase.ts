@@ -1,81 +1,84 @@
 import { useRef, useState } from "react";
-import { purchaseTicket } from "@/app/lib/purchase-ticket";
+import { SeatStatus, type Seat } from "@/app/lib/get-seat-availability";
+import { reserveSeat } from "@/app/lib/reserve-seat";
 
 function fieldError(input: HTMLInputElement): string {
   if (!input.value.trim()) {
-    return input.name === "fullName"
-      ? "Introduce tu nombre completo."
-      : "Introduce tu correo electrónico.";
+    return "Introduce tu correo electrónico.";
   }
 
-  return input.validity.typeMismatch
+  return !input.validity.valid || input.value.trim().length > 254
     ? "Introduce un correo electrónico válido."
     : "";
 }
 
-export type PurchaseStatus = "idle" | "pending" | "success" | "error";
+export type PurchaseStatus =
+  "idle" | "pending" | "success" | "conflict" | "error";
 
-export function usePurchase(eventId: string) {
-  const fullNameRef = useRef<HTMLInputElement>(null);
+export function usePurchase(
+  eventId: string,
+  selectedSeat: Seat | null,
+  onConflict: () => void,
+  onSuccess: (ticketId: string) => void,
+) {
   const emailRef = useRef<HTMLInputElement>(null);
-  const idempotencyKeyRef = useRef<string | null>(null);
+  const requestInFlightRef = useRef(false);
   const [status, setStatus] = useState<PurchaseStatus>("idle");
-  const [errors, setErrors] = useState({ fullName: "", email: "" });
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const isLocked = status === "pending" || status === "success";
+  const canReserve =
+    !isLocked &&
+    selectedSeat?.status === SeatStatus.Available &&
+    emailError === "";
 
-  async function purchase() {
-    const fullName = fullNameRef.current;
+  async function reserve() {
     const email = emailRef.current;
-    if (!fullName || !email || status === "pending" || status === "success") {
+    if (
+      !email ||
+      isLocked ||
+      requestInFlightRef.current ||
+      selectedSeat?.status !== SeatStatus.Available
+    ) {
       return;
     }
 
-    fullName.value = fullName.value.trim();
     email.value = email.value.trim();
-    const nextErrors = {
-      fullName: fieldError(fullName),
-      email: fieldError(email),
-    };
-    setErrors(nextErrors);
-    setStatus("idle");
+    const error = fieldError(email);
+    setEmailError(error);
 
-    if (nextErrors.fullName || nextErrors.email) {
-      (nextErrors.fullName ? fullName : email).focus();
+    if (error) {
+      email.focus();
       return;
     }
 
-    idempotencyKeyRef.current ??= crypto.randomUUID();
+    requestInFlightRef.current = true;
     setStatus("pending");
-    try {
-      const purchased = await purchaseTicket(
-        eventId,
-        fullName.value,
-        email.value,
-        idempotencyKeyRef.current,
-      );
-      setStatus(purchased ? "success" : "error");
-    } catch {
-      setStatus("error");
+    const result = await reserveSeat(
+      eventId,
+      selectedSeat.ticketId,
+      email.value,
+    );
+    requestInFlightRef.current = false;
+    setStatus(result.status);
+    if (result.status === "conflict") {
+      onConflict();
+    } else if (result.status === "success") {
+      onSuccess(result.ticketId);
     }
   }
 
-  function handleInputChange(
-    name: "fullName" | "email",
-    input: HTMLInputElement,
-  ) {
-    idempotencyKeyRef.current = null;
-    if (errors[name]) {
-      const message = fieldError(input);
-      setErrors((previous) => ({ ...previous, [name]: message }));
-    }
+  function handleInputChange(input: HTMLInputElement) {
+    setEmailError(fieldError(input));
   }
 
   return {
-    fullNameRef,
     emailRef,
     status,
-    errors,
-    hasError: status === "error",
-    purchase,
+    emailError,
+    isLocked,
+    canReserve,
+    hasError: status === "error" || status === "conflict",
+    reserve,
     handleInputChange,
   };
 }
