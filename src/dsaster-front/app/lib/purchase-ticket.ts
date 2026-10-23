@@ -1,29 +1,38 @@
-// import { postEventsEventIdTickets } from "@/api/booking";
+import { isAxiosError } from "axios";
+import { purchaseTicket as purchaseTicketRequest } from "@/api/booking";
 
-export function purchaseTicket(
+export type PurchaseTicketResult =
+  | { readonly status: "success"; readonly ticketCode: string }
+  | {
+      readonly status: "forbidden" | "not-found" | "conflict" | "error";
+    };
+
+const failureStatuses = {
+  403: "forbidden",
+  404: "not-found",
+  409: "conflict",
+} as const;
+
+export async function purchaseTicket(
   eventId: string,
+  ticketId: string,
   fullName: string,
   email: string,
   idempotencyKey: string,
-): Promise<boolean> {
-  // TODO(BookingService): the v0.0.0-beta spec removed
-  // POST /events/{eventId}/tickets, splitting it into the seat-scoped
-  // POST /events/{eventId}/tickets/{ticketId}/reserve and .../purchase.
-  // The generated call below no longer exists, so purchases stay disabled
-  // until this is rewired with the selected seat's ticketId.
-  // try {
-  //   await postEventsEventIdTickets(
-  //     eventId,
-  //     { fullName, email, idempotencyKey },
-  //     { "X-Idempotency-Key": idempotencyKey },
-  //   );
-  //   return true;
-  // } catch (exception) {
-  //   console.log(exception);
-  //   return false;
-  // }
-  console.debug(
-    `Purchase for event ${eventId} is disabled until the seat-scoped booking endpoints are wired (idempotency key ${idempotencyKey}).`,
-  );
-  return Promise.resolve(false);
+): Promise<PurchaseTicketResult> {
+  try {
+    const ticket = await purchaseTicketRequest(
+      eventId,
+      ticketId,
+      { fullName, email },
+      { "X-Idempotency-Key": idempotencyKey },
+    );
+    return { status: "success", ticketCode: ticket.ticketCode };
+  } catch (error) {
+    const httpStatus = isAxiosError(error) ? error.response?.status : undefined;
+    return {
+      status:
+        failureStatuses[httpStatus as keyof typeof failureStatuses] ?? "error",
+    };
+  }
 }

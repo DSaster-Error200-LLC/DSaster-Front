@@ -45,13 +45,7 @@ export default function PurchaseDetails({
         <p className="text-sm text-brand-muted">{event.venue.location}</p>
       </section>
 
-      <PurchaseForm
-        key={event.id}
-        eventId={event.id}
-        onSuccess={(ticketId) => {
-          window.alert(`Asiento reservado. Ticket ID: ${ticketId}`);
-        }}
-      />
+      <PurchaseForm key={event.id} event={event} />
     </article>
   );
 }
