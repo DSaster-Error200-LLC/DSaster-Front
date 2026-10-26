@@ -1,6 +1,9 @@
 import axios, { type AxiosRequestConfig } from "axios";
+import axiosRetry from "axios-retry";
 
 const bookingAxios = axios.create({ baseURL: "/api/booking" });
+axiosRetry(bookingAxios, { retries: 0 });
+
 const searchAxios = axios.create({ baseURL: "/api/search" });
 
 export function bookingInstance<T>(
