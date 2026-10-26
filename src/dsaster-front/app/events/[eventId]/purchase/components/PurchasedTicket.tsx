@@ -4,12 +4,14 @@ import { formatEventDate } from "@/app/lib/date";
 interface PurchasedTicketProps {
   readonly event: Event;
   readonly fullName: string;
+  readonly seatNumber: string;
   readonly ticketCode: string;
 }
 
 export function PurchasedTicket({
   event,
   fullName,
+  seatNumber,
   ticketCode,
 }: Readonly<PurchasedTicketProps>) {
   const { day, month, time } = formatEventDate(event.date);
@@ -25,6 +27,7 @@ export function PurchasedTicket({
       ),
     },
     { label: "Recinto", value: event.venue.name },
+    { label: "Asiento", value: seatNumber },
     { label: "Titular", value: fullName },
   ];
 

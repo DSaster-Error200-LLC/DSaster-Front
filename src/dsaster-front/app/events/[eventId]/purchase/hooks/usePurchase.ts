@@ -19,7 +19,7 @@ export function usePurchase(
   eventId: string,
   selectedSeat: Seat | null,
   onConflict: () => void,
-  onSuccess: (ticketId: string, email: string) => void,
+  onSuccess: (ticketId: string, email: string, seatNumber: string) => void,
 ) {
   const emailRef = useRef<HTMLInputElement>(null);
   const requestInFlightRef = useRef(false);
@@ -63,7 +63,7 @@ export function usePurchase(
     if (result.status === "conflict") {
       onConflict();
     } else if (result.status === "success") {
-      onSuccess(result.ticketId, email.value);
+      onSuccess(result.ticketId, email.value, selectedSeat.seatNumber);
     }
   }
 

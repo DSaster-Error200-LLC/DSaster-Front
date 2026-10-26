@@ -19,11 +19,13 @@ interface PurchaseFormProps {
 interface Reservation {
   readonly ticketId: string;
   readonly email: string;
+  readonly seatNumber: string;
 }
 
 interface Purchase {
   readonly fullName: string;
   readonly ticketCode: string;
+  readonly seatNumber: string;
 }
 
 export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
@@ -45,7 +47,8 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
     event.id,
     seats.selectedSeat,
     seats.retry,
-    (ticketId, email) => setReservation({ ticketId, email }),
+    (ticketId, email, seatNumber) =>
+      setReservation({ ticketId, email, seatNumber }),
   );
 
   function closeDialog() {
@@ -61,6 +64,7 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
         <PurchasedTicket
           event={event}
           fullName={purchase.fullName}
+          seatNumber={purchase.seatNumber}
           ticketCode={purchase.ticketCode}
         />
       </div>
@@ -130,10 +134,15 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
           eventId={event.id}
           ticketId={reservation.ticketId}
           email={reservation.email}
+          seatNumber={reservation.seatNumber}
           onClose={closeDialog}
           onPurchased={(fullName, ticketCode) => {
             setReservation(null);
-            setPurchase({ fullName, ticketCode });
+            setPurchase({
+              fullName,
+              ticketCode,
+              seatNumber: reservation.seatNumber,
+            });
           }}
         />
       )}

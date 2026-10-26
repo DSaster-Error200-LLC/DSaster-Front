@@ -270,13 +270,14 @@ describe("ticket purchase", () => {
     return { user, dialog, inDialog: within(dialog) };
   }
 
-  it("asks only for a required full name and shows the email from the seat selection", async () => {
+  it("asks only for a required full name and shows the selected seat and the email from the seat selection", async () => {
     const { user, dialog, inDialog } = await openPurchaseDialog();
     const fullName = inDialog.getByLabelText("Nombre completo");
 
     expect(fullName).toHaveFocus();
     expect(fullName).toBeRequired();
     expect(within(dialog).getAllByRole("textbox")).toHaveLength(1);
+    expect(inDialog.getByText("Asiento A-1")).toBeInTheDocument();
     expect(dialog).toHaveTextContent("ada@example.com");
 
     for (const value of ["", "   "]) {
@@ -339,6 +340,7 @@ describe("ticket purchase", () => {
       event.date,
     );
     expect(ticket.getByText(event.venue.name)).toBeInTheDocument();
+    expect(ticket.getByText("A-1")).toBeInTheDocument();
     expect(ticket.getByText("Ada Lovelace")).toBeInTheDocument();
     expect(ticket.getByText("TK-ABC123")).toBeInTheDocument();
   });

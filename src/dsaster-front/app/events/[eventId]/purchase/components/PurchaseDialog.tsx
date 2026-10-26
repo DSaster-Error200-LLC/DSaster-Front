@@ -11,6 +11,7 @@ interface PurchaseDialogProps {
   readonly eventId: string;
   readonly ticketId: string;
   readonly email: string;
+  readonly seatNumber: string;
   readonly onClose: () => void;
   readonly onPurchased: (fullName: string, ticketCode: string) => void;
 }
@@ -29,6 +30,7 @@ export function PurchaseDialog({
   eventId,
   ticketId,
   email,
+  seatNumber,
   onClose,
   onPurchased,
 }: Readonly<PurchaseDialogProps>) {
@@ -90,9 +92,12 @@ export function PurchaseDialog({
           >
             Completar compra
           </h2>
-          <p className="wrap-break-word text-sm text-brand-muted">
-            Tu asiento está reservado para {email}.
-          </p>
+          <div>
+            <p className="font-medium text-brand-ink">Asiento {seatNumber}</p>
+            <p className="wrap-break-word text-sm text-brand-muted">
+              Reservado para {email}.
+            </p>
+          </div>
 
           <PurchaseFormField
             id={id}
