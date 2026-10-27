@@ -1,6 +1,8 @@
 interface PurchaseSubmitButtonProps {
   readonly isPending: boolean;
   readonly disabled: boolean;
+  readonly label?: string;
+  readonly pendingLabel?: string;
 }
 
 const buttonClassName =
@@ -9,10 +11,12 @@ const buttonClassName =
 export function PurchaseSubmitButton({
   isPending,
   disabled,
+  label = "Seleccionar Asiento",
+  pendingLabel = "Reservando…",
 }: Readonly<PurchaseSubmitButtonProps>) {
   return (
     <button type="submit" disabled={disabled} className={buttonClassName}>
-      {isPending ? "Reservando…" : "Seleccionar Asiento"}
+      {isPending ? pendingLabel : label}
     </button>
   );
 }
