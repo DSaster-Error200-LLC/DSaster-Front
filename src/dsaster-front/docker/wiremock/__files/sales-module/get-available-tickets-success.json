@@ -1,0 +1,10 @@
+[
+  { "ticketId": "22222222-2222-2222-2222-2222222222a1", "seatNumber": "A-1", "status": "Available" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222a2", "seatNumber": "A-2", "status": "Sold" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222a3", "seatNumber": "A-3", "status": "Available" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222a4", "seatNumber": "A-4", "status": "Reserved" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222b1", "seatNumber": "B-1", "status": "Available" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222b2", "seatNumber": "B-2", "status": "Available" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222b3", "seatNumber": "B-3", "status": "Sold" },
+  { "ticketId": "22222222-2222-2222-2222-2222222222b4", "seatNumber": "B-4", "status": "Available" }
+]

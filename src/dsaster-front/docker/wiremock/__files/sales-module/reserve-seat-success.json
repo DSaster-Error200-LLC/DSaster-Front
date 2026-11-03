@@ -1,0 +1,7 @@
+{{regexExtract request.pathSegments.[4] '([a-f])([0-9])$' 'seat'}}{
+  "ticketId": "{{request.pathSegments.[4]}}",
+  "eventId": "{{request.pathSegments.[2]}}",
+  "seatNumber": "{{upper seat.0}}-{{seat.1}}",
+  "email": "{{jsonPath request.body '$.email'}}",
+  "expiresAtUtc": "{{now offset='10 minutes'}}"
+}

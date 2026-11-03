@@ -1,0 +1,20 @@
+{
+  "name": "POST /dsaster-search-service/events/{eventId}",
+  "priority": 6,
+  "request": {
+    "method": "POST",
+    "urlPathTemplate": "/dsaster-search-service/events/{eventId}",
+    "pathParameters": {
+      "eventId": {
+        "matches": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      }
+    }
+  },
+  "response": {
+    "status": 201,
+    "bodyFileName": "dsaster-search-service/events-controller-register-success.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

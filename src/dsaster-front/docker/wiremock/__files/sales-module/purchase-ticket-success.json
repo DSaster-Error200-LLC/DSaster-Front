@@ -1,0 +1,9 @@
+{{regexExtract request.pathSegments.[4] '([a-f])([0-9])$' 'seat'}}{
+  "ticketId": "{{request.pathSegments.[4]}}",
+  "eventId": "{{request.pathSegments.[2]}}",
+  "seatNumber": "{{upper seat.0}}-{{seat.1}}",
+  "fullName": "{{jsonPath request.body '$.fullName'}}",
+  "email": "{{jsonPath request.body '$.email'}}",
+  "ticketCode": "{{randomValue type='ALPHANUMERIC' length=8 uppercase=true}}",
+  "purchasedAtUtc": "{{now}}"
+}

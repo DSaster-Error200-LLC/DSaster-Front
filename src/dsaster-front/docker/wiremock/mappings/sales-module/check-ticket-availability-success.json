@@ -1,0 +1,23 @@
+{
+  "name": "GET /sales-module/events/{eventId}/tickets/{ticketId}/availability",
+  "priority": 7,
+  "request": {
+    "method": "GET",
+    "urlPathTemplate": "/sales-module/events/{eventId}/tickets/{ticketId}/availability",
+    "pathParameters": {
+      "eventId": {
+        "matches": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      },
+      "ticketId": {
+        "matches": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "sales-module/check-ticket-availability-success.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "GET /sales-module/health",
+  "request": {
+    "method": "GET",
+    "urlPath": "/sales-module/health"
+  },
+  "response": {
+    "status": 200
+  }
+}

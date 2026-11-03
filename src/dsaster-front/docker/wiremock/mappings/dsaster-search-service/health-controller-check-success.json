@@ -1,0 +1,14 @@
+{
+  "name": "GET /dsaster-search-service/health",
+  "request": {
+    "method": "GET",
+    "urlPath": "/dsaster-search-service/health"
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "dsaster-search-service/health-controller-check-success.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

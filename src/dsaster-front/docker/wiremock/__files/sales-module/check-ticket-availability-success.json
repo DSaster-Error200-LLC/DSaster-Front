@@ -1,0 +1,5 @@
+{{regexExtract request.pathSegments.[4] '([a-f])([0-9])$' 'seat'}}{
+  "ticketId": "{{request.pathSegments.[4]}}",
+  "seatNumber": "{{upper seat.0}}-{{seat.1}}",
+  "status": "Available"
+}

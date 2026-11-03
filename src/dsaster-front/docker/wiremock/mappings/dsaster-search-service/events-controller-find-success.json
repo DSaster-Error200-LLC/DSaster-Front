@@ -1,0 +1,19 @@
+{
+  "name": "GET /dsaster-search-service/events",
+  "request": {
+    "method": "GET",
+    "urlPath": "/dsaster-search-service/events",
+    "queryParameters": {
+      "name": {
+        "matches": ".+"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "dsaster-search-service/events-controller-find-success.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

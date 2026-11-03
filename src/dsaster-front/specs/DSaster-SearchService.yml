@@ -1,0 +1,202 @@
+openapi: 3.0.0
+paths:
+  /events:
+    get:
+      description: Returns a preview of every registered event whose name contains the
+        given text, in registration order.
+      operationId: EventsController_find
+      parameters:
+        - name: name
+          required: true
+          in: query
+          description: Text to look for in the event name. The match is case-insensitive,
+            ignores leading and trailing spaces, and succeeds when the event
+            name contains the text
+          schema:
+            example: rock
+            type: string
+      responses:
+        "200":
+          description: Previews of the matching events. The list is empty when no event
+            matches or when the name contains only spaces.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/EventPreview"
+        "400":
+          description: The name is missing or empty, or the request contains query
+            parameters other than name.
+      summary: Search registered events by name
+      tags: &a1
+        - events
+  /events/{eventId}:
+    post:
+      operationId: EventsController_register
+      parameters:
+        - name: eventId
+          required: true
+          in: path
+          schema:
+            format: uuid
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegisterEventRequest"
+      responses:
+        "201":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "400":
+          description: Invalid event id or body
+        "409":
+          description: Event id is already registered
+      summary: Register an event so it appears in search results
+      tags: *a1
+    get:
+      operationId: EventsController_getDetails
+      parameters:
+        - name: eventId
+          required: true
+          in: path
+          schema:
+            format: uuid
+            type: string
+      responses:
+        "200":
+          description: ""
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Event"
+        "404":
+          description: Event not found
+      summary: Get event details by ID
+      tags: *a1
+  /health:
+    get:
+      operationId: HealthController_check
+      parameters: []
+      responses:
+        "200":
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+      summary: Health check endpoint
+      tags:
+        - health
+info:
+  title: DSaster-Search
+  description: ""
+  version: 1.1.0
+  contact: {}
+tags: []
+servers: []
+components:
+  schemas:
+    EventPreview:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Identifier the event was registered with
+          example: 0b6f8f5e-6c1d-4a51-9a53-2f8f4f0d1c11
+        name:
+          type: string
+          description: Event name
+          example: Rock Concert
+        artist:
+          type: string
+          description: Performing artist
+          example: The Example Band
+        date:
+          format: date-time
+          type: string
+          description: Date and time of the event, in ISO 8601
+          example: 2026-10-10T20:00:00.000Z
+        venueName:
+          type: string
+          description: Name of the venue hosting the event
+          example: Central Arena
+      required:
+        - id
+        - name
+        - artist
+        - date
+        - venueName
+    RegisterVenueRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+      required:
+        - name
+        - location
+    RegisterEventRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        artist:
+          type: string
+        date:
+          format: date-time
+          type: string
+        venue:
+          $ref: "#/components/schemas/RegisterVenueRequest"
+      required:
+        - name
+        - artist
+        - date
+        - venue
+    Venue:
+      type: object
+      properties:
+        name:
+          type: string
+        location:
+          type: string
+      required:
+        - name
+        - location
+    Event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        artist:
+          type: string
+        date:
+          format: date-time
+          type: string
+        venue:
+          $ref: "#/components/schemas/Venue"
+      required:
+        - id
+        - name
+        - artist
+        - date
+        - venue
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+          example: ok
+      required:
+        - status

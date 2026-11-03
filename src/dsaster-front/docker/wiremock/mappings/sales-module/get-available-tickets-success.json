@@ -1,0 +1,20 @@
+{
+  "name": "GET /sales-module/events/{eventId}/tickets",
+  "priority": 6,
+  "request": {
+    "method": "GET",
+    "urlPathTemplate": "/sales-module/events/{eventId}/tickets",
+    "pathParameters": {
+      "eventId": {
+        "matches": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "sales-module/get-available-tickets-success.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "POST /sales-module/events/{eventId}/tickets/{ticketId}/reserve",
+  "priority": 7,
+  "request": {
+    "method": "POST",
+    "urlPathTemplate": "/sales-module/events/{eventId}/tickets/{ticketId}/reserve",
+    "pathParameters": {
+      "eventId": {
+        "matches": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      },
+      "ticketId": {
+        "matches": "[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "sales-module/reserve-seat-success.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

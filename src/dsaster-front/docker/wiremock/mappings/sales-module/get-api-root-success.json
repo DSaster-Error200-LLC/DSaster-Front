@@ -1,0 +1,10 @@
+{
+  "name": "GET /sales-module/",
+  "request": {
+    "method": "GET",
+    "urlPathPattern": "/sales-module/?"
+  },
+  "response": {
+    "status": 200
+  }
+}
