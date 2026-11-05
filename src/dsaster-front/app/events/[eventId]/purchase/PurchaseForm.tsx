@@ -1,4 +1,5 @@
 import { useId, useState } from "react";
+import { StepIndicator } from "@dsaster/ui";
 import type { Event } from "@/api/search";
 import {
   PurchasedTicket,
@@ -26,6 +27,20 @@ interface Purchase {
   readonly fullName: string;
   readonly ticketCode: string;
   readonly seatNumber: string;
+}
+
+const steps = ["Asiento", "Datos", "Listo"] as const;
+
+function CheckoutProgress({ current }: Readonly<{ readonly current: number }>) {
+  return (
+    <StepIndicator
+      steps={steps}
+      current={current}
+      label="Progreso de la compra"
+      completedLabel="(completado)"
+      className="mb-(--space-6)"
+    />
+  );
 }
 
 export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
@@ -60,6 +75,7 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
   if (purchase) {
     return (
       <div lang="es" className="w-full">
+        <CheckoutProgress current={2} />
         <PurchaseSuccess isSuccess />
         <PurchasedTicket
           event={event}
@@ -73,6 +89,8 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
 
   return (
     <div lang="es" className="w-full">
+      <CheckoutProgress current={reservation ? 1 : 0} />
+
       <div inert={reservation !== null}>
         <SeatMap
           state={seats.state}
@@ -86,16 +104,13 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
           noValidate
           aria-labelledby={`${id}-heading`}
           aria-busy={status === "pending"}
-          className="space-y-5"
+          className="grid gap-(--space-5)"
           onSubmit={(submitEvent) => {
             submitEvent.preventDefault();
             void reserve();
           }}
         >
-          <h2
-            id={`${id}-heading`}
-            className="font-display text-2xl font-bold text-brand-ink"
-          >
+          <h2 id={`${id}-heading`} className="text-heading-m text-ink">
             Datos del comprador
           </h2>
 

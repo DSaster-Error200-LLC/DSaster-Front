@@ -14,6 +14,7 @@ export default defineConfig([
     "next-env.d.ts",
     "postcss.config.mjs",
     "api/**",
+    "packages/ui/storybook-static/**",
   ]),
   {
     extends: [
@@ -47,6 +48,20 @@ export default defineConfig([
         },
       ],
       "sonarjs/todo-tag": "warn",
+    },
+  },
+  {
+    // The design-system package is framework-agnostic: plain <img>, not next/image.
+    files: ["packages/ui/**"],
+    rules: {
+      "@next/next/no-img-element": "off",
+    },
+  },
+  {
+    // Storybook config lives beside the package source and points at it.
+    files: ["packages/ui/.storybook/**"],
+    rules: {
+      "@typescript-eslint/no-restricted-imports": "off",
     },
   },
   {

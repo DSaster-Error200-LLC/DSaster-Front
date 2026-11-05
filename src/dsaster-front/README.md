@@ -26,6 +26,21 @@ After changing API schemas or mutator configuration, regenerate clients with
 `pnpm api`. Do not edit files under `api/` manually. API functions return response
 payloads directly rather than Axios response objects.
 
+## Design system and component library
+
+UI follows the Ticket DSaster design system. Its tokens and React components
+live in the workspace package [`packages/ui`](./packages/ui/README.md)
+(`@dsaster/ui`), which the app consumes as a regular dependency:
+
+```tsx
+import { Button, EventCard } from "@dsaster/ui";
+```
+
+`app/globals.css` loads the package styles and the Tailwind bridge, so
+token-backed utilities such as `bg-surface-100`, `text-ink` and
+`text-heading-m` are available in app code. Never hard-code colours; use the
+design-system tokens (`var(--brand)`, `var(--space-4)`, …).
+
 ## Run the project
 
 ```bash

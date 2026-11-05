@@ -1,4 +1,5 @@
 import { useEffect, useId } from "react";
+import { Button } from "@dsaster/ui";
 import {
   useTicketPurchase,
   type TicketPurchaseStatus,
@@ -63,10 +64,10 @@ export function PurchaseDialog({
   }, [isPending, onClose]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-(--space-4)">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-brand-ink/60"
+        className="absolute inset-0 bg-surface-000/80"
         onClick={isPending ? undefined : onClose}
       />
 
@@ -74,27 +75,26 @@ export function PurchaseDialog({
         role="dialog"
         aria-modal="true"
         aria-labelledby={`${id}-heading`}
-        className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+        className="relative w-full max-w-md rounded-(--radius-lg) border border-line bg-surface-100 p-(--space-5) shadow-sheet"
       >
         <form
           noValidate
           aria-labelledby={`${id}-heading`}
           aria-busy={isPending}
-          className="space-y-5"
+          className="grid gap-(--space-5)"
           onSubmit={(event) => {
             event.preventDefault();
             void purchase();
           }}
         >
-          <h2
-            id={`${id}-heading`}
-            className="font-display text-2xl font-bold text-brand-ink"
-          >
+          <h2 id={`${id}-heading`} className="text-heading-m text-ink">
             Completar compra
           </h2>
           <div>
-            <p className="font-medium text-brand-ink">Asiento {seatNumber}</p>
-            <p className="wrap-break-word text-sm text-brand-muted">
+            <p className="text-body font-semibold text-ink">
+              Asiento {seatNumber}
+            </p>
+            <p className="wrap-break-word text-body-s text-ink-muted">
               Reservado para {email}.
             </p>
           </div>
@@ -120,14 +120,15 @@ export function PurchaseDialog({
 
           <PurchaseError hasError={hasError} message={errorMessages[status]} />
 
-          <button
+          <Button
             type="button"
+            variant="secondary"
+            block
             onClick={onClose}
             disabled={isPending}
-            className="w-full rounded-xl border border-brand-border px-8 py-3 font-display text-base font-semibold text-brand-ink transition-colors hover:bg-brand-bg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust disabled:cursor-not-allowed disabled:opacity-60"
           >
             {isBlocked ? "Cerrar" : "Cancelar"}
-          </button>
+          </Button>
         </form>
       </div>
     </div>

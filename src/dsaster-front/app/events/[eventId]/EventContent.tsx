@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Button, Notice } from "@dsaster/ui";
 import Navbar from "@/app/components/Navbar";
 import EventDetails from "@/app/events/[eventId]/EventDetails";
 import EventNotFound from "@/app/events/[eventId]/not-found";
@@ -37,32 +38,33 @@ export default function EventContent({
   if (state.status === "missing") return <EventNotFound />;
 
   return (
-    <main lang="es" className="min-h-screen bg-brand-bg">
+    <main lang="es" className="min-h-screen">
       <Navbar />
       {state.status === "loading" && (
-        <p
-          role="status"
-          className="mx-auto max-w-4xl px-6 py-12 text-center text-brand-muted"
-        >
-          Cargando evento…
-        </p>
+        <div className="mx-auto max-w-4xl px-(--space-4) py-(--space-6) sm:px-(--space-5)">
+          <Notice tone="info">Cargando evento…</Notice>
+        </div>
       )}
       {state.status === "error" && (
-        <section className="mx-auto max-w-4xl px-6 py-12 text-center">
-          <p role="alert" className="text-brand-ink">
-            No se pudo cargar el evento. Inténtalo de nuevo.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setState({ status: "loading" });
-              setAttempt((previous) => previous + 1);
-            }}
-            className="mt-6 rounded-xl bg-brand-rust px-8 py-4 font-display font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust"
+        <div className="mx-auto max-w-4xl px-(--space-4) py-(--space-6) sm:px-(--space-5)">
+          <Notice
+            tone="danger"
+            action={
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => {
+                  setState({ status: "loading" });
+                  setAttempt((previous) => previous + 1);
+                }}
+              >
+                Reintentar
+              </Button>
+            }
           >
-            Reintentar
-          </button>
-        </section>
+            No se pudo cargar el evento. Inténtalo de nuevo.
+          </Notice>
+        </div>
       )}
       {state.status === "success" &&
         (view === "details" ? (

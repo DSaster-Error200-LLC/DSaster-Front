@@ -305,7 +305,7 @@ describe("seat availability", () => {
     ).toBeInTheDocument();
     const available = screen.getByRole("radio", { name: "A-1, Disponible" });
     expect(available).toBeEnabled();
-    expect(available.closest("label")).toHaveClass("border-emerald-500");
+    expect(available.closest("label")).toHaveClass("border-success");
     expect(
       screen.getByText("A-1", { selector: "label span" }),
     ).toBeInTheDocument();
@@ -314,11 +314,11 @@ describe("seat availability", () => {
     ).toBeDisabled();
     expect(
       screen.getByRole("radio", { name: "B-1, Reservado" }).closest("label"),
-    ).toHaveClass("border-amber-500");
+    ).toHaveClass("border-warning");
     expect(screen.getByRole("radio", { name: "C-1, Vendido" })).toBeDisabled();
     expect(
       screen.getByRole("radio", { name: "C-1, Vendido" }).closest("label"),
-    ).toHaveClass("border-rose-500");
+    ).toHaveClass("border-danger");
   });
 
   it("keeps a single seat selected when the buyer picks another", async () => {

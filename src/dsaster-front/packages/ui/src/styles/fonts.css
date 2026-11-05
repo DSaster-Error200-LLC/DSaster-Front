@@ -1,0 +1,4 @@
+/* Ticket DSaster — the three Google Fonts stand-ins (Archivo, Archivo Black, JetBrains Mono).
+   Opt-in: a Next.js app loads them with next/font instead and maps them onto
+   --font-display, --font-sans and --font-mono itself. */
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=Archivo+Black&family=JetBrains+Mono:wght@400;500;600&display=swap");

@@ -1,4 +1,6 @@
-import Image from "next/image";
+import Link from "next/link";
+import { Wordmark } from "@dsaster/ui";
+import ButtonLink from "@/app/components/ButtonLink";
 
 const navLinks = [
   { label: "Conciertos", href: "#" },
@@ -9,32 +11,26 @@ const navLinks = [
 
 export default function Navbar() {
   return (
-    <header className="border-b border-brand-border bg-white">
-      <nav className="mx-auto flex h-20 max-w-6xl items-center justify-between px-6">
-        <div className="flex items-center gap-3">
-          <Image
-            src="/logo.svg"
-            alt="TicketDsaster Logo"
-            width={36}
-            height={36}
-            className="h-9 w-9"
-          />
-          <h2 className="font-display text-lg font-bold tracking-tight text-brand-ink">
-            TicketDsaster
-          </h2>
-        </div>
-        <div className="hidden items-center gap-8 md:flex">
-          <a
-            href="#"
-            className="rounded-full bg-brand-maroon px-5 py-2.5 font-display text-sm font-semibold text-white transition-colors hover:bg-brand-maroon-dark"
-          >
+    <header className="border-b border-line bg-surface-100">
+      <nav
+        aria-label="Principal"
+        className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-(--space-4) px-(--space-4) sm:px-(--space-5)"
+      >
+        <Link
+          href="/"
+          className="rounded-(--radius-sm) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+        >
+          <Wordmark size="md" />
+        </Link>
+        <div className="hidden items-center gap-(--space-5) md:flex">
+          <ButtonLink href="/" variant="secondary" size="sm">
             Explorar Eventos
-          </a>
+          </ButtonLink>
           {navLinks.map((link) => (
             <a
               key={link.label}
               href={link.href}
-              className="text-sm font-medium text-brand-ink/80 transition-colors hover:text-brand-ink"
+              className="rounded-(--radius-sm) text-body font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             >
               {link.label}
             </a>

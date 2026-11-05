@@ -14,11 +14,11 @@ describe("Hero", () => {
       }),
     );
 
-  it("renders the search input", () => {
+  it("renders the labelled search input", () => {
     renderHero();
 
     expect(
-      screen.getByPlaceholderText("Nombre del evento"),
+      screen.getByRole("searchbox", { name: "Nombre del evento" }),
     ).toBeInTheDocument();
   });
 
@@ -35,7 +35,7 @@ describe("Hero", () => {
     renderHero({ onQueryChange, onSearch });
 
     fireEvent.change(
-      screen.getByRole("searchbox", { name: "Buscar eventos por nombre" }),
+      screen.getByRole("searchbox", { name: "Nombre del evento" }),
       { target: { value: "Concierto" } },
     );
     fireEvent.click(screen.getByRole("button", { name: /buscar/i }));

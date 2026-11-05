@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { Notice } from "@dsaster/ui";
 import EventList from "@/app/components/EventList";
 import Hero from "@/app/components/Hero";
 import {
@@ -60,14 +61,16 @@ export default function EventSearch() {
       />
       <div aria-live="polite" aria-busy={state.status === "loading"}>
         {state.status === "loading" && (
-          <p className="px-6 pb-8 text-center text-brand-muted">
-            Buscando eventos...
-          </p>
+          <div className="mx-auto max-w-4xl px-(--space-4) pb-(--space-6) sm:px-(--space-5)">
+            <Notice tone="info">Buscando eventos...</Notice>
+          </div>
         )}
         {state.status === "error" && (
-          <p role="alert" className="px-6 pb-8 text-center text-brand-rust">
-            No fue posible buscar eventos. Inténtalo de nuevo.
-          </p>
+          <div className="mx-auto max-w-4xl px-(--space-4) pb-(--space-6) sm:px-(--space-5)">
+            <Notice tone="danger" title="No fue posible buscar eventos.">
+              Inténtalo de nuevo.
+            </Notice>
+          </div>
         )}
         {state.status === "success" && (
           <EventList events={state.events} searchedName={searchedName} />

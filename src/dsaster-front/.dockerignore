@@ -10,5 +10,10 @@
 !app
 !api
 !public
+!packages
+packages/*/node_modules
+packages/*/.storybook
+packages/*/storybook-static
+**/*.stories.*
 **/*.test.*
 **/*.spec.*

@@ -1,3 +1,5 @@
+import { Notice } from "@dsaster/ui";
+
 interface PurchaseSuccessProps {
   readonly isSuccess: boolean;
   readonly message?: string;
@@ -7,9 +9,11 @@ export function PurchaseSuccess({
   isSuccess,
   message = "Tu compra se ha completado.",
 }: Readonly<PurchaseSuccessProps>) {
+  if (!isSuccess) return null;
+
   return (
-    <output className="block font-display text-lg font-semibold text-brand-ink">
-      {isSuccess ? message : ""}
-    </output>
+    <Notice tone="success" title={message}>
+      Guarda el código del ticket: lo necesitarás para entrar.
+    </Notice>
   );
 }
