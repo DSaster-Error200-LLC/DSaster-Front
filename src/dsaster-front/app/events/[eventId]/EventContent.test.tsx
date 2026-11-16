@@ -12,9 +12,11 @@ import {
   type Seat,
 } from "@/app/lib/get-seat-availability";
 import { reserveSeat } from "@/app/lib/reserve-seat";
+import { startCheckout } from "@/app/lib/start-checkout";
 
 vi.mock("@/api/search", () => ({ eventsControllerGetDetails: vi.fn() }));
 vi.mock("@/app/lib/reserve-seat", () => ({ reserveSeat: vi.fn() }));
+vi.mock("@/app/lib/start-checkout", () => ({ startCheckout: vi.fn() }));
 vi.mock("@/app/lib/get-seat-availability", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/app/lib/get-seat-availability")>()),
   getSeatAvailability: vi.fn(),
@@ -34,7 +36,21 @@ beforeEach(() => {
   getDetails.mockReset();
   vi.mocked(reserveSeat).mockReset();
   getSeats.mockReset().mockResolvedValue({ status: "success", seats: [] });
+  vi.mocked(startCheckout).mockReset().mockResolvedValue({ status: "success" });
 });
+
+async function completeBuyerDetails(user = userEvent.setup()) {
+  await user.type(
+    await screen.findByLabelText("Nombre completo"),
+    "Ada Lovelace",
+  );
+  await user.type(
+    screen.getByLabelText("Correo electrónico"),
+    "ada@example.com",
+  );
+  await user.click(screen.getByRole("button", { name: "Iniciar compra" }));
+  await screen.findByRole("heading", { name: "Seleccionar Asiento" });
+}
 
 describe("EventContent", () => {
   it.each(["details", "purchase"] as const)(
@@ -103,6 +119,7 @@ describe("EventContent", () => {
     render(
       await PurchasePage({ params: Promise.resolve({ eventId: requestedId }) }),
     );
+    await completeBuyerDetails(user);
 
     expect(
       await screen.findByRole("heading", { name: event.name }),
@@ -207,7 +224,7 @@ describe("EventContent", () => {
       });
 
       expect(
-        screen.getByRole("heading", { name: event.name }),
+        screen.getByRole("heading", { name: "Tus datos" }),
       ).toBeInTheDocument();
       expect(screen.getByRole("form")).toBeInTheDocument();
       expect(screen.queryByRole("alert")).not.toBeInTheDocument();
@@ -294,6 +311,7 @@ describe("seat availability", () => {
     render(
       await PurchasePage({ params: Promise.resolve({ eventId: event.id }) }),
     );
+    await completeBuyerDetails();
   }
 
   it("renders each seat with its number and status color", async () => {

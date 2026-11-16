@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { SeatStatus, type Seat } from "@/app/lib/get-seat-availability";
 import { reserveSeat } from "@/app/lib/reserve-seat";
 
-function fieldError(input: HTMLInputElement): string {
+export function emailFieldError(input: HTMLInputElement): string {
   if (!input.value.trim()) {
     return "Introduce tu correo electrónico.";
   }
@@ -43,7 +43,7 @@ export function usePurchase(
     }
 
     email.value = email.value.trim();
-    const error = fieldError(email);
+    const error = emailFieldError(email);
     setEmailError(error);
 
     if (error) {
@@ -68,7 +68,7 @@ export function usePurchase(
   }
 
   function handleInputChange(input: HTMLInputElement) {
-    setEmailError(fieldError(input));
+    setEmailError(emailFieldError(input));
   }
 
   function reset() {

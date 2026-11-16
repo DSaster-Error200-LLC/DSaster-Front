@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import EventDetails from "@/app/events/[eventId]/EventDetails";
 import EventNotFound from "@/app/events/[eventId]/not-found";
-import PurchaseDetails from "@/app/events/[eventId]/purchase/PurchaseDetails";
+import Checkout from "@/app/events/[eventId]/purchase/Checkout";
 import {
   getEventDetails,
   type GetEventDetailsResult,
@@ -68,7 +68,7 @@ export default function EventContent({
         (view === "details" ? (
           <EventDetails event={state.event} />
         ) : (
-          <PurchaseDetails event={state.event} />
+          <Checkout event={state.event} />
         ))}
     </main>
   );
