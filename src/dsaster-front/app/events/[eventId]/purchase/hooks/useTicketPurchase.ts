@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { purchaseTicket } from "@/app/lib/purchase-ticket";
 
-function fieldError(input: HTMLInputElement): string {
+export function fullNameFieldError(input: HTMLInputElement): string {
   return input.value.trim() ? "" : "Introduce tu nombre completo.";
 }
 
@@ -38,7 +38,7 @@ export function useTicketPurchase(
     if (!fullName || isLocked || requestInFlightRef.current) return;
 
     fullName.value = fullName.value.trim();
-    const error = fieldError(fullName);
+    const error = fullNameFieldError(fullName);
     setFullNameError(error);
 
     if (error) {
@@ -70,7 +70,7 @@ export function useTicketPurchase(
   }
 
   function handleInputChange(input: HTMLInputElement) {
-    if (fullNameError) setFullNameError(fieldError(input));
+    if (fullNameError) setFullNameError(fullNameFieldError(input));
   }
 
   return {
