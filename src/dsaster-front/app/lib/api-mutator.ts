@@ -1,10 +1,21 @@
 import axios, { type AxiosRequestConfig } from "axios";
-import axiosRetry from "axios-retry";
+import { attach } from "retry-axios";
 
-const bookingAxios = axios.create({ baseURL: "/api/booking" });
-axiosRetry(bookingAxios, { retries: 0 });
+const API_TIMEOUT_MS = 1_000;
+const RETRY_CONFIG = { retry: 3, backoffType: "exponential" } as const;
 
-const searchAxios = axios.create({ baseURL: "/api/search" });
+function createApiAxios(baseURL: string) {
+  const instance = axios.create({
+    baseURL,
+    timeout: API_TIMEOUT_MS,
+    raxConfig: RETRY_CONFIG,
+  });
+  attach(instance);
+  return instance;
+}
+
+const bookingAxios = createApiAxios("/api/booking");
+const searchAxios = createApiAxios("/api/search");
 
 export function bookingInstance<T>(
   config: AxiosRequestConfig,

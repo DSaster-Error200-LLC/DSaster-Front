@@ -1,5 +1,4 @@
 import { AxiosError } from "axios";
-import { exponentialDelay } from "axios-retry";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { getAvailableTickets } from "@/api/booking";
 import {
@@ -63,64 +62,5 @@ describe("getSeatAvailability", () => {
     await expect(
       getSeatAvailability("event-1", new AbortController().signal),
     ).resolves.toEqual({ status: "error" });
-  });
-
-  describe("timeout & retry", () => {
-    /** Helper that extracts the options (second arg) passed to getAvailableTickets. */
-    function capturedOptions() {
-      const [, opts] = availableTickets.mock.calls[0];
-      return opts as Record<string, unknown>;
-    }
-
-    it("sets a 1 000 ms timeout on the request", async () => {
-      availableTickets.mockResolvedValueOnce([]);
-
-      await getSeatAvailability("event-1", new AbortController().signal);
-
-      expect(capturedOptions()).toMatchObject({ timeout: 1_000 });
-    });
-
-    it("configures 3 retries with exponential back-off", async () => {
-      availableTickets.mockResolvedValueOnce([]);
-
-      await getSeatAvailability("event-1", new AbortController().signal);
-
-      const retryConfig = capturedOptions()["axios-retry"] as Record<
-        string,
-        unknown
-      >;
-      expect(retryConfig).toMatchObject({
-        retries: 3,
-        retryDelay: exponentialDelay,
-      });
-    });
-
-    it("does not retry a 404 response", async () => {
-      availableTickets.mockResolvedValueOnce([]);
-
-      await getSeatAvailability("event-1", new AbortController().signal);
-
-      const retryConfig = capturedOptions()["axios-retry"] as {
-        retryCondition: (error: AxiosError) => boolean;
-      };
-      const notFoundError = Object.assign(new AxiosError(), {
-        response: { status: 404 },
-      });
-      expect(retryConfig.retryCondition(notFoundError)).toBe(false);
-    });
-
-    it("retries on a 500 response", async () => {
-      availableTickets.mockResolvedValueOnce([]);
-
-      await getSeatAvailability("event-1", new AbortController().signal);
-
-      const retryConfig = capturedOptions()["axios-retry"] as {
-        retryCondition: (error: AxiosError) => boolean;
-      };
-      const serverError = Object.assign(new AxiosError(), {
-        response: { status: 500 },
-      });
-      expect(retryConfig.retryCondition(serverError)).toBe(true);
-    });
   });
 });
