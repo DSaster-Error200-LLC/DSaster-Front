@@ -169,9 +169,6 @@ importers:
       axios:
         specifier: ^1.20.0
         version: 1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0)
-      axios-retry:
-        specifier: ^4.5.0
-        version: 4.5.0(axios@1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0))
       next:
         specifier: ^16.3.8
         version: 16.3.8(@babel/core@7.29.7(supports-color@2.0.0))(@types/node@24.19.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -181,6 +178,9 @@ importers:
       react-dom:
         specifier: ^19.3.0
         version: 19.3.0(react@19.3.0)
+      retry-axios:
+        specifier: ^4.0.3
+        version: 4.0.3(axios@1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0))
     devDependencies:
       '@commitlint/cli':
         specifier: ^21.2.3
@@ -1803,11 +1803,6 @@ packages:
     resolution: {integrity: sha512-UzGt8zg7Ny8djbYMhxl2zuEevVa7r2gJjYY5Lwr1xM7+XU2nd6CkIWFTVcCIbAP63vSz71NaVyyuSk9lHKcy0A==}
     engines: {node: '>=4'}
 
-  axios-retry@4.5.0:
-    resolution: {integrity: sha512-aR99oXhpEDGo0UuAlYcn2iGRds30k366Zfa05XWScR9QaQD4JYiP3/1Qt1u7YlefUOK+cn0CcwoL1oefavQUlQ==}
-    peerDependencies:
-      axios: 0.x || 1.x
-
   axios@1.20.0:
     resolution: {integrity: sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==}
 
@@ -2654,10 +2649,6 @@ packages:
     resolution: {integrity: sha512-MjYsKHO5O7mCsmRGxWcLWheFqN9DJ/2TmngvjKXihe6efViPqc274+Fx/4fYj/r03+ESvBdTXK0V6tA3rgez1g==}
     engines: {node: '>= 0.4'}
 
-  is-retry-allowed@2.2.0:
-    resolution: {integrity: sha512-XVm7LOeLpTW4jV19QSH38vkswxoLud8sQ57YwJVTPWdiaI9I8keEhGFpBlslyVsgdQy4Opg8QOLb8YRgsyZiQg==}
-    engines: {node: '>=10'}
-
   is-set@2.0.3:
     resolution: {integrity: sha512-iPAjerrse27/ygGLxw+EBR9agv9Y6uLeYVJMu+QNCoouJ1/1ri0mGrcWpfCqFZuzzx3WjtwxG098X+n4OuRkPg==}
     engines: {node: '>= 0.4'}
@@ -3295,6 +3286,12 @@ packages:
     resolution: {integrity: sha512-tqt+NBWwyaMgw3zDsnygx4CByWjQEJHOPMdslYhppaQSJUtL/D4JO9CcBBlhPoI8lz9oJIDXkwXfhF4aWqP8xQ==}
     engines: {node: '>= 0.4'}
     hasBin: true
+
+  retry-axios@4.0.3:
+    resolution: {integrity: sha512-rs4HXqxwWKP7bHIgo02ijrSwS9GPzXA0i2vhN7x2Qp2Gn/SZPuQkcA5qqouR+8VJrjT7DrzZpU8FTFkOA7AFXQ==}
+    engines: {node: '>=20'}
+    peerDependencies:
+      axios: '*'
 
   reusify@1.1.0:
     resolution: {integrity: sha512-g6QUff04oZpHs0eG5p83rFLhHeV00ug/Yf9nZM6fLeUrPguBTkTQOdpAWWspMh55TZfVQDPaN3NQJfbVRAxdIw==}
@@ -5199,11 +5196,6 @@ snapshots:
 
   axe-core@4.13.0: {}
 
-  axios-retry@4.5.0(axios@1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0)):
-    dependencies:
-      axios: 1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0)
-      is-retry-allowed: 2.2.0
-
   axios@1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0):
     dependencies:
       follow-redirects: 1.16.0(debug@4.4.3(supports-color@2.0.0))
@@ -6289,8 +6281,6 @@ snapshots:
       has-tostringtag: 1.0.2
       hasown: 2.0.4
 
-  is-retry-allowed@2.2.0: {}
-
   is-set@2.0.3: {}
 
   is-shared-array-buffer@1.0.4:
@@ -6912,6 +6902,10 @@ snapshots:
       object-keys: 1.1.1
       path-parse: 1.0.7
       supports-preserve-symlinks-flag: 1.0.0
+
+  retry-axios@4.0.3(axios@1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0)):
+    dependencies:
+      axios: 1.20.0(debug@4.4.3(supports-color@2.0.0))(supports-color@2.0.0)
 
   reusify@1.1.0: {}
 
