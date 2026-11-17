@@ -27,8 +27,6 @@ export type GetSeatAvailabilityResult =
  * Fetches the seat availability (GET /events/{eventId}/tickets) for an event,
  * mapping the documented responses: 200 with the seat list, 404 when the event
  * is unknown to the BookingService, anything else as a generic failure.
- *
- * The shared API client applies its default timeout and retry policy.
  */
 export async function getSeatAvailability(
   eventId: string,
