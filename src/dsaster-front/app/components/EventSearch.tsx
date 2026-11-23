@@ -60,12 +60,15 @@ export default function EventSearch() {
       />
       <div aria-live="polite" aria-busy={state.status === "loading"}>
         {state.status === "loading" && (
-          <p className="px-6 pb-8 text-center text-brand-muted">
+          <p className="px-6 pb-8 text-center text-body text-ink-muted">
             Buscando eventos...
           </p>
         )}
         {state.status === "error" && (
-          <p role="alert" className="px-6 pb-8 text-center text-brand-rust">
+          <p
+            role="alert"
+            className="px-6 pb-8 text-center text-body text-danger"
+          >
             No fue posible buscar eventos. Inténtalo de nuevo.
           </p>
         )}
