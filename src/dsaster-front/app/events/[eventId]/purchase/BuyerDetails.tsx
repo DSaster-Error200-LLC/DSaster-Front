@@ -1,6 +1,6 @@
-import Link from "next/link";
 import { useId, useRef, useState } from "react";
 import type { Event } from "@/api/search";
+import ButtonLink from "@/app/components/ButtonLink";
 import {
   PurchaseError,
   PurchaseFormField,
@@ -73,13 +73,10 @@ export default function BuyerDetails({
 
   return (
     <article className="mx-auto max-w-xl px-6 py-12">
-      <h1
-        id={`${id}-heading`}
-        className="font-display text-4xl font-extrabold tracking-tight text-brand-ink sm:text-5xl"
-      >
+      <h1 id={`${id}-heading`} className="text-display-l uppercase text-ink">
         Tus datos
       </h1>
-      <p className="mt-3 wrap-break-word text-brand-muted">
+      <p className="mt-3 wrap-break-word text-body text-ink-muted">
         Para comprar entradas de {event.name}.
       </p>
 
@@ -128,12 +125,9 @@ export default function BuyerDetails({
           message="No se pudo iniciar la compra. Inténtalo de nuevo."
         />
 
-        <Link
-          href={`/events/${event.id}`}
-          className="block w-full rounded-xl border border-brand-border px-8 py-3 text-center font-display text-base font-semibold text-brand-ink transition-colors hover:bg-white focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust"
-        >
+        <ButtonLink href={`/events/${event.id}`} variant="secondary" block>
           Volver al evento
-        </Link>
+        </ButtonLink>
       </form>
     </article>
   );

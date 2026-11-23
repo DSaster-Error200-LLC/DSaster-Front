@@ -8,7 +8,7 @@ export function PurchaseSuccess({
   message = "Tu compra se ha completado.",
 }: Readonly<PurchaseSuccessProps>) {
   return (
-    <output className="block font-display text-lg font-semibold text-brand-ink">
+    <output className="block text-heading-s text-success">
       {isSuccess ? message : ""}
     </output>
   );

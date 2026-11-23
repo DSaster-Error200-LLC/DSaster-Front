@@ -1,3 +1,4 @@
+import { Button, Notice } from "@dsaster/ui";
 import type { SeatsState } from "@/app/events/[eventId]/purchase/hooks/useSeats";
 import { assertNever } from "@/app/lib/assert-never";
 import { SeatStatus, type Seat } from "@/app/lib/get-seat-availability";
@@ -22,25 +23,26 @@ const legendStatuses = [
   SeatStatus.Sold,
 ] as const;
 
+// Status is never colour alone: every tile also carries the status word.
 function statusStyle(status: SeatStatus): SeatStatusStyle {
   switch (status) {
     case SeatStatus.Available:
       return {
         label: "Disponible",
-        dot: "bg-emerald-500",
-        tile: "border-emerald-500 bg-emerald-50 text-emerald-700",
+        dot: "bg-success",
+        tile: "border-success bg-success-soft text-success",
       };
     case SeatStatus.Reserved:
       return {
         label: "Reservado",
-        dot: "bg-amber-500",
-        tile: "border-amber-500 bg-amber-50 text-amber-700",
+        dot: "bg-warning",
+        tile: "border-warning bg-warning-soft text-warning",
       };
     case SeatStatus.Sold:
       return {
         label: "Vendido",
-        dot: "bg-rose-500",
-        tile: "border-rose-500 bg-rose-50 text-rose-700",
+        dot: "bg-danger",
+        tile: "border-danger bg-danger-soft text-danger",
       };
     default:
       assertNever(status);
@@ -57,55 +59,55 @@ export function SeatMap({
   return (
     <section
       aria-labelledby="seat-map-heading"
-      className="mb-8 border-b border-brand-border pb-8"
+      className="mb-8 border-b border-line pb-8"
     >
-      <h2
-        id="seat-map-heading"
-        className="font-display text-2xl font-bold text-brand-ink"
-      >
+      <h2 id="seat-map-heading" className="text-heading-m text-ink">
         Elige tu asiento
       </h2>
 
       {state.status === "loading" && (
-        <p role="status" className="mt-4 text-brand-muted">
+        <Notice tone="info" className="mt-4">
           Cargando asientos…
-        </p>
+        </Notice>
       )}
       {state.status === "missing" && (
-        <p role="alert" className="mt-4 text-brand-muted">
+        <Notice tone="danger" className="mt-4">
           No encontramos los asientos de este evento.
-        </p>
+        </Notice>
       )}
       {state.status === "error" && (
-        <div className="mt-4">
-          <p role="alert" className="text-brand-maroon">
-            No se pudieron cargar los asientos. Inténtalo de nuevo.
-          </p>
-          <button
-            type="button"
-            onClick={onRetry}
-            disabled={disabled}
-            className="mt-4 rounded-xl bg-brand-rust px-6 py-3 font-display font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust"
-          >
-            Reintentar
-          </button>
-        </div>
+        <Notice
+          tone="danger"
+          className="mt-4"
+          action={
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onRetry}
+              disabled={disabled}
+            >
+              Reintentar
+            </Button>
+          }
+        >
+          No se pudieron cargar los asientos. Inténtalo de nuevo.
+        </Notice>
       )}
       {state.status === "success" &&
         (state.seats.length === 0 ? (
-          <p className="mt-4 text-brand-muted">
+          <p className="mt-4 text-body text-ink-muted">
             No hay asientos para este evento.
           </p>
         ) : (
           <>
-            <ul className="mt-4 flex flex-wrap gap-4 text-sm text-brand-muted">
+            <ul className="mt-4 flex flex-wrap gap-4 text-body-s text-ink-muted">
               {legendStatuses.map((status) => {
                 const { dot, label } = statusStyle(status);
                 return (
                   <li key={status} className="flex items-center gap-2">
                     <span
                       aria-hidden="true"
-                      className={`size-2.5 rounded-full ${dot}`}
+                      className={`size-2.5 rounded-(--radius-pill) ${dot}`}
                     />
                     {label}
                   </li>
@@ -127,8 +129,10 @@ export function SeatMap({
                 return (
                   <label
                     key={seat.ticketId}
-                    className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-lg border px-2 py-2 text-center has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand-rust ${style.tile} ${
-                      isSelected ? "ring-2 ring-brand-rust ring-offset-2" : ""
+                    className={`flex cursor-pointer flex-col items-center gap-0.5 rounded-(--radius-md) border px-2 py-2 text-center transition-colors has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-focus ${style.tile} ${
+                      isSelected
+                        ? "ring-2 ring-brand ring-offset-2 ring-offset-surface-000"
+                        : ""
                     } ${isAvailable ? "" : "cursor-not-allowed opacity-70"}`}
                   >
                     <input
@@ -141,10 +145,8 @@ export function SeatMap({
                       onChange={() => onSelect(seat)}
                       className="sr-only"
                     />
-                    <span className="font-display text-sm font-bold">
-                      {seat.seatNumber}
-                    </span>
-                    <span className="text-xs">{style.label}</span>
+                    <span className="text-mono-m">{seat.seatNumber}</span>
+                    <span className="text-body-s">{style.label}</span>
                   </label>
                 );
               })}
@@ -153,7 +155,7 @@ export function SeatMap({
             {selectedSeat && (
               <p
                 role="status"
-                className="mt-4 text-sm font-medium text-brand-ink"
+                className="mt-4 text-body font-semibold text-ink"
               >
                 Asiento {selectedSeat.seatNumber} seleccionado.
               </p>

@@ -16,33 +16,33 @@ export default function PurchaseDetails({
     <article className="mx-auto max-w-xl px-6 py-12">
       <Link
         href={`/events/${event.id}`}
-        className="inline-flex rounded-sm text-sm font-medium text-brand-muted transition-colors hover:text-brand-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust"
+        className="inline-flex rounded-(--radius-sm) text-body-s font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
       >
         Volver al evento
       </Link>
 
-      <h1 className="mt-8 font-display text-4xl font-extrabold tracking-tight text-brand-ink sm:text-5xl">
+      <h1 className="mt-8 text-display-l uppercase text-ink">
         Seleccionar Asiento
       </h1>
 
       <section
         aria-labelledby="event-summary-heading"
-        className="mb-8 mt-6 space-y-2 border-b border-brand-border pb-8"
+        className="mb-8 mt-6 space-y-2 border-b border-line pb-8"
       >
         <h2
           id="event-summary-heading"
-          className="wrap-break-word font-display text-2xl font-bold text-brand-ink"
+          className="wrap-break-word text-heading-m text-ink"
         >
           {event.name}
         </h2>
-        <p className="text-brand-muted">{event.artist}</p>
-        <p className="text-brand-muted">
+        <p className="text-body text-ink-muted">{event.artist}</p>
+        <p className="text-body text-ink-muted">
           <time dateTime={event.date}>
             {day} {month}, {time}
           </time>
         </p>
-        <p className="font-medium text-brand-ink">{event.venue.name}</p>
-        <p className="text-sm text-brand-muted">{event.venue.location}</p>
+        <p className="text-body font-semibold text-ink">{event.venue.name}</p>
+        <p className="text-body-s text-ink-muted">{event.venue.location}</p>
       </section>
 
       <PurchaseForm key={event.id} event={event} />
