@@ -11,6 +11,8 @@ function stripTrailingSlashes(value: string) {
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // The design-system package ships TypeScript source; bundle it with the app.
+  transpilePackages: ["@dsaster/ui"],
   rewrites() {
     const search = stripTrailingSlashes(
       process.env.SEARCH_API_URL ?? DEFAULT_SEARCH_API_URL,

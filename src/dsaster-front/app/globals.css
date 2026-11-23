@@ -1,17 +1,19 @@
 @import "tailwindcss";
 
-@theme {
-  --color-brand-bg: #f8f4f6;
-  --color-brand-maroon: #7a2331;
-  --color-brand-maroon-dark: #611b26;
-  --color-brand-rust: #b5442e;
-  --color-brand-rust-dark: #98371f;
-  --color-brand-ink: #1b1b2a;
-  --color-brand-muted: #6b6b7b;
-  --color-brand-border: #ece3e6;
+/* Ticket DSaster design system (packages/ui): tokens, component styles and the
+   Tailwind bridge that maps them onto utilities (bg-surface-100, text-ink,
+   border-line-strong, font-display, text-heading-m, …). The app runs the
+   default dark "stage" theme; app/layout.tsx picks the theme. */
+@import "@dsaster/ui/styles.css";
+@import "@dsaster/ui/tailwind.css";
 
-  --font-display: var(--font-heading), sans-serif;
-  --font-body: var(--font-sans-body), sans-serif;
+/* The design-system families, self-hosted through next/font (see app/layout.tsx). */
+:root {
+  --font-display:
+    var(--font-archivo-black), "Archivo Black", system-ui, sans-serif;
+  --font-sans: var(--font-archivo), "Archivo", system-ui, sans-serif;
+  --font-mono:
+    var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, monospace;
 }
 
 @layer base {
@@ -20,10 +22,11 @@
   }
 
   body {
-    @apply bg-brand-bg text-brand-ink font-body antialiased;
+    @apply bg-surface-000 font-sans text-ink antialiased;
   }
 
   ::selection {
-    @apply bg-brand-rust/20;
+    background: var(--brand);
+    color: var(--on-brand);
   }
 }

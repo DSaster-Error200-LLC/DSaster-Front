@@ -92,10 +92,7 @@ export default function PurchaseForm({ event }: Readonly<PurchaseFormProps>) {
             void reserve();
           }}
         >
-          <h2
-            id={`${id}-heading`}
-            className="font-display text-2xl font-bold text-brand-ink"
-          >
+          <h2 id={`${id}-heading`} className="text-heading-m text-ink">
             Datos del comprador
           </h2>
 
