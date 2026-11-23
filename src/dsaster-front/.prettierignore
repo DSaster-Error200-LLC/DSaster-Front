@@ -1,3 +1,4 @@
 .vs/**
 pnpm-lock.yaml
 api/**
+packages/ui/storybook-static/**

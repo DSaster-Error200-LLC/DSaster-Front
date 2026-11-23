@@ -1,0 +1,95 @@
+/* Ticket DSaster — Tailwind CSS v4 bridge, generated from tokens.json by scripts/build-tokens.ts. Do not edit.
+   Import after tokens.css so utilities such as bg-surface-100, text-ink, border-line-strong,
+   font-display and text-heading-m resolve to the design-system custom properties. */
+@theme inline {
+  --color-surface-000: var(--surface-000);
+  --color-surface-100: var(--surface-100);
+  --color-surface-200: var(--surface-200);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-on-brand: var(--on-brand);
+  --color-brand-text: var(--brand-text);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-focus: var(--focus);
+  --font-display: var(--font-display);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --shadow-sheet: var(--shadow-sheet);
+}
+
+@utility text-display-xl {
+  font-family: var(--font-display);
+  font-size: 64px;
+  line-height: 60px;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+@utility text-display-l {
+  font-family: var(--font-display);
+  font-size: 40px;
+  line-height: 40px;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+}
+@utility text-display-numeral {
+  font-family: var(--font-display);
+  font-size: 24px;
+  line-height: 26px;
+  font-weight: 400;
+}
+@utility text-heading-m {
+  font-family: var(--font-sans);
+  font-size: 24px;
+  line-height: 30px;
+  font-weight: 700;
+}
+@utility text-heading-s {
+  font-family: var(--font-sans);
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+}
+@utility text-body {
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 22px;
+  font-weight: 400;
+}
+@utility text-body-s {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 18px;
+  font-weight: 400;
+}
+@utility text-label {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+}
+@utility text-mono-m {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  line-height: 20px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+@utility text-mono-s {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 16px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}

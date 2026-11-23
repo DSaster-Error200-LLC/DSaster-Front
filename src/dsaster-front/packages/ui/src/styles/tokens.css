@@ -1,0 +1,139 @@
+/* Ticket DSaster — generated from tokens.json by scripts/build-tokens.ts. Do not edit. */
+
+/* Colour and shadow, per theme. The first theme ("dark") is the default. */
+:root,
+[data-theme="dark"] {
+  --surface-000: #0e0e0d;
+  --surface-100: #181816;
+  --surface-200: #25241f;
+  --line: #302f2a;
+  --line-strong: #737068;
+  --ink: #f4f1ea;
+  --ink-muted: #aaa69b;
+  --brand: #ffc53d;
+  --brand-hover: #ffd46b;
+  --on-brand: #16150f;
+  --brand-text: #ffc53d;
+  --accent: #ff7a59;
+  --on-accent: #16150f;
+  --success: #5ccfe6;
+  --success-soft: #12323a;
+  --warning: #ffa94d;
+  --warning-soft: #3a2a14;
+  --danger: #ff7085;
+  --danger-soft: #3d1a20;
+  --focus: #ffc53d;
+  --shadow-sheet: 0 -8px 32px rgba(0, 0, 0, 0.6);
+}
+
+[data-theme="paper"] {
+  --surface-000: #f4f1ea;
+  --surface-100: #fffdf8;
+  --surface-200: #e9e4d8;
+  --line: #dcd6c8;
+  --line-strong: #827c6e;
+  --ink: #16150f;
+  --ink-muted: #59554b;
+  --brand: #f2b705;
+  --brand-hover: #ffc81f;
+  --on-brand: #16150f;
+  --brand-text: #7a5600;
+  --accent: #c43d17;
+  --on-accent: #ffffff;
+  --success: #006f87;
+  --success-soft: #d9eff4;
+  --warning: #9a4a00;
+  --warning-soft: #f8e6cf;
+  --danger: #b81d38;
+  --danger-soft: #f8dde1;
+  --focus: #16150f;
+  --shadow-sheet: 0 -8px 32px rgba(22, 21, 15, 0.12);
+}
+
+/* Space, shape and type families. */
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 14px;
+  --radius-pill: 999px;
+  --font-display: "Archivo Black", "Archivo", system-ui, sans-serif;
+  --font-sans: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+/* Type styles, as classes for apps without Tailwind. */
+@layer components {
+  .ds-display-xl {
+    font-family: var(--font-display);
+    font-size: 64px;
+    line-height: 60px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+  }
+  .ds-display-l {
+    font-family: var(--font-display);
+    font-size: 40px;
+    line-height: 40px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .ds-display-numeral {
+    font-family: var(--font-display);
+    font-size: 24px;
+    line-height: 26px;
+    font-weight: 400;
+  }
+  .ds-heading-m {
+    font-family: var(--font-sans);
+    font-size: 24px;
+    line-height: 30px;
+    font-weight: 700;
+  }
+  .ds-heading-s {
+    font-family: var(--font-sans);
+    font-size: 18px;
+    line-height: 24px;
+    font-weight: 700;
+  }
+  .ds-body {
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 22px;
+    font-weight: 400;
+  }
+  .ds-body-s {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 18px;
+    font-weight: 400;
+  }
+  .ds-label {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+  .ds-mono-m {
+    font-family: var(--font-mono);
+    font-size: 15px;
+    line-height: 20px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .ds-mono-s {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+}
