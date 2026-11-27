@@ -1,14 +1,20 @@
 import Link from "next/link";
+import { Icon } from "@dsaster/ui";
 import type { Event } from "@/api/search";
 import PurchaseForm from "@/app/events/[eventId]/purchase/PurchaseForm";
 import { formatEventDate } from "@/app/lib/date";
+import type { Buyer } from "@/app/lib/start-checkout";
 
 interface PurchaseDetailsProps {
   readonly event: Event;
+  readonly buyer: Buyer;
+  readonly onContinue: () => void;
 }
 
 export default function PurchaseDetails({
   event,
+  buyer,
+  onContinue,
 }: Readonly<PurchaseDetailsProps>) {
   const { day, month, time } = formatEventDate(event.date);
 
@@ -16,18 +22,19 @@ export default function PurchaseDetails({
     <article className="mx-auto max-w-xl px-6 py-12">
       <Link
         href={`/events/${event.id}`}
-        className="inline-flex rounded-(--radius-sm) text-body-s font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus"
+        className="inline-flex items-center gap-2 rounded-(--radius-sm) text-body-s font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
       >
+        <Icon name="chevron-left" size={16} />
         Volver al evento
       </Link>
 
-      <h1 className="mt-8 text-display-l uppercase text-ink">
+      <h1 className="mt-(--space-5) text-display-l uppercase text-ink">
         Seleccionar Asiento
       </h1>
 
       <section
         aria-labelledby="event-summary-heading"
-        className="mb-8 mt-6 space-y-2 border-b border-line pb-8"
+        className="mt-(--space-5) mb-(--space-6) grid gap-(--space-2) border-b border-line pb-(--space-6)"
       >
         <h2
           id="event-summary-heading"
@@ -36,16 +43,25 @@ export default function PurchaseDetails({
           {event.name}
         </h2>
         <p className="text-body text-ink-muted">{event.artist}</p>
-        <p className="text-body text-ink-muted">
+        <p className="flex items-center gap-(--space-2) text-body text-ink-muted">
+          <Icon name="calendar" size={14} />
           <time dateTime={event.date}>
             {day} {month}, {time}
           </time>
         </p>
-        <p className="text-body font-semibold text-ink">{event.venue.name}</p>
+        <p className="flex items-center gap-(--space-2) text-body font-semibold text-ink">
+          <Icon name="map-pin" size={14} />
+          {event.venue.name}
+        </p>
         <p className="text-body-s text-ink-muted">{event.venue.location}</p>
       </section>
 
-      <PurchaseForm key={event.id} event={event} />
+      <PurchaseForm
+        key={event.id}
+        event={event}
+        buyer={buyer}
+        onContinue={onContinue}
+      />
     </article>
   );
 }

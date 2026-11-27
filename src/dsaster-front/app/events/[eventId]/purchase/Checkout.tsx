@@ -3,6 +3,7 @@ import { StepIndicator } from "@dsaster/ui";
 import type { Event } from "@/api/search";
 import BuyerDetails from "@/app/events/[eventId]/purchase/BuyerDetails";
 import PurchaseDetails from "@/app/events/[eventId]/purchase/PurchaseDetails";
+import type { Buyer } from "@/app/lib/start-checkout";
 
 interface CheckoutProps {
   readonly event: Event;
@@ -12,6 +13,7 @@ const steps = ["Datos", "Asientos", "Pago", "Listo"] as const;
 
 export default function Checkout({ event }: Readonly<CheckoutProps>) {
   const [step, setStep] = useState(0);
+  const [buyer, setBuyer] = useState<Buyer | null>(null);
   const panelRef = useRef<HTMLDivElement>(null);
 
   // The previous step unmounts, so move focus to the new one instead of losing it.
@@ -32,9 +34,21 @@ export default function Checkout({ event }: Readonly<CheckoutProps>) {
 
       <div ref={panelRef} tabIndex={-1} className="outline-none">
         {step === 0 && (
-          <BuyerDetails event={event} onContinue={() => setStep(1)} />
+          <BuyerDetails
+            event={event}
+            onContinue={(nextBuyer) => {
+              setBuyer(nextBuyer);
+              setStep(1);
+            }}
+          />
         )}
-        {step === 1 && <PurchaseDetails event={event} />}
+        {step === 1 && buyer && (
+          <PurchaseDetails
+            event={event}
+            buyer={buyer}
+            onContinue={() => setStep(2)}
+          />
+        )}
         {step > 1 && (
           // TODO: build the payment and confirmation steps.
           <section className="mx-auto max-w-xl px-6 py-12">

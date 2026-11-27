@@ -6,13 +6,15 @@ import {
   PurchaseFormField,
   PurchaseSubmitButton,
 } from "@/app/events/[eventId]/purchase/components";
-import { emailFieldError } from "@/app/events/[eventId]/purchase/hooks/usePurchase";
-import { fullNameFieldError } from "@/app/events/[eventId]/purchase/hooks/useTicketPurchase";
-import { startCheckout } from "@/app/lib/start-checkout";
+import {
+  emailFieldError,
+  fullNameFieldError,
+} from "@/app/lib/buyer-validation";
+import { startCheckout, type Buyer } from "@/app/lib/start-checkout";
 
 interface BuyerDetailsProps {
   readonly event: Event;
-  readonly onContinue: () => void;
+  readonly onContinue: (buyer: Buyer) => void;
 }
 
 interface FieldErrors {
@@ -53,12 +55,10 @@ export default function BuyerDetails({
     if (nextErrors.email) return email.focus();
 
     setStatus("pending");
-    const result = await startCheckout(event.id, {
-      fullName: fullName.value,
-      email: email.value,
-    });
+    const buyer = { fullName: fullName.value, email: email.value };
+    const result = await startCheckout(event.id, buyer);
     if (result.status === "success") {
-      onContinue();
+      onContinue(buyer);
     } else {
       setStatus("error");
     }
