@@ -11,11 +11,9 @@ import {
   SeatStatus,
   type Seat,
 } from "@/app/lib/get-seat-availability";
-import { reserveSeat } from "@/app/lib/reserve-seat";
 import { startCheckout } from "@/app/lib/start-checkout";
 
 vi.mock("@/api/search", () => ({ eventsControllerGetDetails: vi.fn() }));
-vi.mock("@/app/lib/reserve-seat", () => ({ reserveSeat: vi.fn() }));
 vi.mock("@/app/lib/start-checkout", () => ({ startCheckout: vi.fn() }));
 vi.mock("@/app/lib/get-seat-availability", async (importOriginal) => ({
   ...(await importOriginal<typeof import("@/app/lib/get-seat-availability")>()),
@@ -34,7 +32,6 @@ const getSeats = vi.mocked(getSeatAvailability);
 
 beforeEach(() => {
   getDetails.mockReset();
-  vi.mocked(reserveSeat).mockReset();
   getSeats.mockReset().mockResolvedValue({ status: "success", seats: [] });
   vi.mocked(startCheckout).mockReset().mockResolvedValue({ status: "success" });
 });
@@ -100,10 +97,9 @@ describe("EventContent", () => {
     expect(screen.queryByRole("form")).not.toBeInTheDocument();
   });
 
-  it("renders direct purchase summary and submits the returned event ID", async () => {
+  it("renders the seat selection flow for the returned event ID", async () => {
     const user = userEvent.setup();
     getDetails.mockResolvedValueOnce(event);
-    vi.mocked(reserveSeat).mockResolvedValueOnce({ status: "error" });
     getSeats.mockResolvedValueOnce({
       status: "success",
       seats: [
@@ -111,6 +107,7 @@ describe("EventContent", () => {
           ticketId: "ticket-1",
           seatNumber: "A-1",
           status: SeatStatus.Available,
+          price: 45,
         },
       ],
     });
@@ -135,27 +132,25 @@ describe("EventContent", () => {
       screen.getByRole("link", { name: "Volver al evento" }),
     ).toHaveAttribute("href", `/events/${event.id}`);
     expect(
-      screen.getByRole("form", { name: "Datos del comprador" }),
+      screen.getByRole("form", { name: "Selección de asientos" }),
     ).toBeInTheDocument();
     expect(getDetails).toHaveBeenCalledWith(requestedId, expect.any(Object));
 
     expect(screen.queryByLabelText("Nombre completo")).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText("Correo electrónico"),
+    ).not.toBeInTheDocument();
     await user.click(
-      await screen.findByRole("radio", { name: "A-1, Disponible" }),
+      await screen.findByRole("checkbox", { name: /A-1, Disponible/ }),
     );
-    await user.type(
-      screen.getByLabelText("Correo electrónico"),
-      "ada@example.com",
-    );
-    await user.click(
-      screen.getByRole("button", { name: "Seleccionar Asiento" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Reservar asientos" }));
 
-    expect(reserveSeat).toHaveBeenCalledWith(
-      event.id,
-      "ticket-1",
-      "ada@example.com",
-    );
+    expect(
+      screen.getByRole("region", { name: "Asientos reservados" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Continuar al pago" }),
+    ).toBeInTheDocument();
   });
 
   it.each([
@@ -288,21 +283,25 @@ describe("seat availability", () => {
       ticketId: "aaaaaaaa-1111-4111-8111-111111111111",
       seatNumber: "A-1",
       status: SeatStatus.Available,
+      price: 45,
     },
     {
       ticketId: "aaaaaaaa-2222-4222-8222-222222222222",
       seatNumber: "A-2",
       status: SeatStatus.Available,
+      price: 35,
     },
     {
       ticketId: "bbbbbbbb-3333-4333-8333-333333333333",
       seatNumber: "B-1",
       status: SeatStatus.Reserved,
+      price: 35,
     },
     {
       ticketId: "cccccccc-4444-4444-8444-444444444444",
       seatNumber: "C-1",
       status: SeatStatus.Sold,
+      price: 60,
     },
   ];
 
@@ -314,46 +313,60 @@ describe("seat availability", () => {
     await completeBuyerDetails();
   }
 
-  it("renders each seat with its number and status color", async () => {
+  it("renders each seat with its number, status color and price", async () => {
     getSeats.mockResolvedValueOnce({ status: "success", seats });
     await renderPurchase();
 
     expect(
-      await screen.findByRole("radiogroup", { name: "Elige tu asiento" }),
+      await screen.findByRole("group", { name: "Elige tus asientos" }),
     ).toBeInTheDocument();
-    const available = screen.getByRole("radio", { name: "A-1, Disponible" });
+    const available = screen.getByRole("checkbox", {
+      name: /A-1, Disponible/,
+    });
     expect(available).toBeEnabled();
-    expect(available.closest("label")).toHaveClass("border-emerald-500");
+    expect(available.closest("label")).toHaveClass("border-success");
     expect(
       screen.getByText("A-1", { selector: "label span" }),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("radio", { name: "B-1, Reservado" }),
+      screen.getByRole("checkbox", { name: /B-1, Reservado/ }),
     ).toBeDisabled();
     expect(
-      screen.getByRole("radio", { name: "B-1, Reservado" }).closest("label"),
-    ).toHaveClass("border-amber-500");
-    expect(screen.getByRole("radio", { name: "C-1, Vendido" })).toBeDisabled();
+      screen
+        .getByRole("checkbox", {
+          name: /B-1, Reservado/,
+        })
+        .closest("label"),
+    ).toHaveClass("border-warning");
     expect(
-      screen.getByRole("radio", { name: "C-1, Vendido" }).closest("label"),
-    ).toHaveClass("border-rose-500");
+      screen.getByRole("checkbox", { name: /C-1, Vendido/ }),
+    ).toBeDisabled();
+    expect(
+      screen.getByRole("checkbox", { name: /C-1, Vendido/ }).closest("label"),
+    ).toHaveClass("border-danger");
+    expect(available.closest("label")).toHaveTextContent("€45.00");
   });
 
-  it("keeps a single seat selected when the buyer picks another", async () => {
+  it("keeps several seats selected at once", async () => {
     const user = userEvent.setup();
     getSeats.mockResolvedValueOnce({ status: "success", seats });
     await renderPurchase();
 
-    const first = await screen.findByRole("radio", {
-      name: "A-1, Disponible",
+    const first = await screen.findByRole("checkbox", {
+      name: /A-1, Disponible/,
     });
-    const second = screen.getByRole("radio", { name: "A-2, Disponible" });
+    const second = screen.getByRole("checkbox", { name: /A-2, Disponible/ });
 
     await user.click(first);
     expect(first).toBeChecked();
     expect(screen.getByText("Asiento A-1 seleccionado.")).toBeInTheDocument();
 
     await user.click(second);
+    expect(first).toBeChecked();
+    expect(second).toBeChecked();
+    expect(screen.getByText("2 asientos seleccionados.")).toBeInTheDocument();
+
+    await user.click(first);
     expect(first).not.toBeChecked();
     expect(second).toBeChecked();
     expect(screen.getByText("Asiento A-2 seleccionado.")).toBeInTheDocument();
@@ -366,9 +379,9 @@ describe("seat availability", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "No encontramos los asientos de este evento.",
     );
-    expect(screen.queryByRole("radio")).not.toBeInTheDocument();
+    expect(screen.queryByRole("checkbox")).not.toBeInTheDocument();
     expect(
-      screen.getByRole("form", { name: "Datos del comprador" }),
+      screen.getByRole("form", { name: "Selección de asientos" }),
     ).toBeInTheDocument();
   });
 
@@ -386,7 +399,7 @@ describe("seat availability", () => {
 
     expect(getSeats).toHaveBeenCalledTimes(2);
     expect(
-      await screen.findByRole("radio", { name: "A-1, Disponible" }),
+      await screen.findByRole("checkbox", { name: /A-1, Disponible/ }),
     ).toBeEnabled();
   });
 });

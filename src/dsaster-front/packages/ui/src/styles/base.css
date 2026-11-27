@@ -1,0 +1,12 @@
+/* Ticket DSaster — page defaults. Opt-in: apps with their own reset (Tailwind preflight) skip this. */
+@layer base {
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 22px;
+    background: var(--surface-000);
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+}

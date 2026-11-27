@@ -12,7 +12,9 @@ export type SeatsState =
 export function useSeats(eventId: string) {
   const [state, setState] = useState<SeatsState>({ status: "loading" });
   const [attempt, setAttempt] = useState(0);
-  const [selectedTicketId, setSelectedTicketId] = useState<string | null>(null);
+  const [selectedTicketIds, setSelectedTicketIds] = useState<
+    ReadonlySet<string>
+  >(() => new Set());
 
   useEffect(() => {
     const controller = new AbortController();
@@ -25,20 +27,29 @@ export function useSeats(eventId: string) {
   }, [eventId, attempt]);
 
   const seats = state.status === "success" ? state.seats : [];
-  const selectedSeat =
-    seats.find((seat) => seat.ticketId === selectedTicketId) ?? null;
+  const selectedSeats = seats.filter((seat) =>
+    selectedTicketIds.has(seat.ticketId),
+  );
 
-  function selectSeat(seat: Seat) {
-    if (seat.status === SeatStatus.Available) {
-      setSelectedTicketId(seat.ticketId);
-    }
+  function toggleSeat(seat: Seat) {
+    if (seat.status !== SeatStatus.Available) return;
+
+    setSelectedTicketIds((previous) => {
+      const next = new Set(previous);
+      if (next.has(seat.ticketId)) {
+        next.delete(seat.ticketId);
+      } else {
+        next.add(seat.ticketId);
+      }
+      return next;
+    });
   }
 
   function retry() {
     setState({ status: "loading" });
-    setSelectedTicketId(null);
+    setSelectedTicketIds(new Set());
     setAttempt((previous) => previous + 1);
   }
 
-  return { state, selectedSeat, selectSeat, retry };
+  return { state, selectedSeats, toggleSeat, retry };
 }

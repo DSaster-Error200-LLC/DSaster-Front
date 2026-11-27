@@ -1,3 +1,5 @@
+import { Notice } from "@dsaster/ui";
+
 interface PurchaseErrorProps {
   readonly hasError: boolean;
   readonly message?: string;
@@ -9,9 +11,5 @@ export function PurchaseError({
 }: Readonly<PurchaseErrorProps>) {
   if (!hasError) return null;
 
-  return (
-    <p role="alert" className="text-sm text-brand-maroon">
-      {message}
-    </p>
-  );
+  return <Notice tone="danger">{message}</Notice>;
 }

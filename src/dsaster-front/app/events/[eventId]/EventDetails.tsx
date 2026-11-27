@@ -1,5 +1,7 @@
 import Link from "next/link";
+import { Icon } from "@dsaster/ui";
 import { Event } from "@/api/search";
+import ButtonLink from "@/app/components/ButtonLink";
 import { formatEventDate } from "@/app/lib/date";
 
 interface EventDetailsProps {
@@ -14,72 +16,57 @@ export default function EventDetails({ event }: Readonly<EventDetailsProps>) {
       <div className="mb-8">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-sm font-medium text-brand-muted transition-colors hover:text-brand-ink"
+          className="inline-flex items-center gap-2 rounded-(--radius-sm) text-body-s font-medium text-ink-muted transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
-          <svg
-            className="h-4 w-4"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fillRule="evenodd"
-              d="M17 10a.75.75 0 01-.75.75H5.612l4.158 3.96a.75.75 0 11-1.04 1.08l-5.5-5.25a.75.75 0 010-1.08l5.5-5.25a.75.75 0 111.04 1.08L5.612 9.25H16.25A.75.75 0 0117 10z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <Icon name="chevron-left" size={16} />
           Volver a eventos
         </Link>
       </div>
 
-      <header className="mb-8 border-b border-brand-border pb-8">
-        <h1 className="font-display text-4xl font-extrabold tracking-tight text-brand-ink sm:text-5xl">
+      <header className="mb-8 border-b border-line pb-8">
+        <h1 className="wrap-break-word text-display-l uppercase text-ink">
           {event.name}
         </h1>
-        <p className="mt-3 text-xl text-brand-muted">{event.artist}</p>
+        <p className="mt-3 text-heading-s text-ink-muted">{event.artist}</p>
       </header>
 
       <div className="grid gap-8 sm:grid-cols-2">
         <section className="space-y-6">
           <div>
-            <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-brand-muted">
+            <h2 className="mb-3 text-label uppercase text-ink-muted">
               Fecha y hora
             </h2>
             <div className="flex items-baseline gap-3">
               <div className="flex flex-col">
-                <span className="font-display text-5xl font-extrabold leading-none text-brand-ink">
+                <span className="font-display text-5xl leading-none text-ink">
                   {day}
                 </span>
-                <span className="font-display text-lg font-bold uppercase tracking-wider text-brand-rust">
+                <span className="text-heading-s uppercase text-brand-text">
                   {month}
                 </span>
               </div>
-              <span className="text-lg text-brand-muted">{time}</span>
+              <span className="text-mono-m text-ink-muted">{time}</span>
             </div>
           </div>
 
           <div>
-            <h2 className="mb-3 font-display text-sm font-semibold uppercase tracking-wider text-brand-muted">
-              Lugar
-            </h2>
+            <h2 className="mb-3 text-label uppercase text-ink-muted">Lugar</h2>
             <div className="space-y-1">
-              <p className="text-lg font-semibold text-brand-ink">
-                {event.venue.name}
-              </p>
-              <p className="text-base text-brand-muted">
-                {event.venue.location}
-              </p>
+              <p className="text-heading-s text-ink">{event.venue.name}</p>
+              <p className="text-body text-ink-muted">{event.venue.location}</p>
             </div>
           </div>
         </section>
 
         <section className="flex items-start sm:justify-end">
-          <Link
+          <ButtonLink
             href={`/events/${event.id}/purchase`}
-            className="w-full rounded-xl bg-brand-rust px-8 py-4 text-center font-display text-base font-semibold text-white transition-colors hover:bg-brand-rust-dark focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-rust sm:max-w-sm"
+            size="lg"
+            block
+            className="sm:max-w-sm"
           >
             Seleccionar Asiento
-          </Link>
+          </ButtonLink>
         </section>
       </div>
     </article>

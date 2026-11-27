@@ -5,6 +5,8 @@ WORKDIR /app
 ENV HUSKY=0 NEXT_TELEMETRY_DISABLED=1 COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+# Workspace package manifests must be present for a frozen-lockfile install.
+COPY packages/ui/package.json ./packages/ui/
 RUN corepack enable && corepack install
 RUN pnpm install --frozen-lockfile
 

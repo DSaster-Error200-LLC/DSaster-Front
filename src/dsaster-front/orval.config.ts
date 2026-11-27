@@ -1,6 +1,52 @@
-import { defineConfig } from "orval";
+import { defineConfig, defineTransformer } from "orval";
 
 const searchRelease = "v1.0.0";
+
+/**
+ * Local snapshot of the BookingService v1.0.0 OpenAPI contract (commit
+ * fa00fba), fetched from the service's Swagger endpoint. Point this at a
+ * running instance to regenerate the client straight from it:
+ *
+ *   BOOKING_OPENAPI_URL=http://localhost:5283/swagger/v1/swagger.json pnpm api
+ *
+ * The committed snapshot keeps `pnpm api` working offline (and in CI).
+ */
+const bookingSpec = process.env.BOOKING_OPENAPI_URL ?? "./openapi/booking.json";
+
+/**
+ * Swashbuckle does not emit `required` nor the C# non-nullable reference
+ * types, so every property arrives as optional and nullable. These are the
+ * properties the contract really allows to be null; the rest are required.
+ */
+const nullableBookingProperties: Readonly<Record<string, readonly string[]>> = {
+  ErrorResponse: ["details", "errors"],
+  TicketResponse: ["purchasedAtUtc"],
+};
+
+const fixBookingNullability = defineTransformer((spec) => {
+  for (const [schemaName, schema] of Object.entries(
+    spec.components?.schemas ?? {},
+  )) {
+    if (!schema || typeof schema !== "object" || !("properties" in schema)) {
+      continue;
+    }
+
+    const { properties } = schema;
+    if (!properties || typeof properties !== "object") continue;
+
+    const nullable = new Set(nullableBookingProperties[schemaName]);
+    for (const [propertyName, property] of Object.entries(properties)) {
+      if (nullable.has(propertyName)) continue;
+      delete (property as { nullable?: boolean }).nullable;
+    }
+
+    schema.required = Object.keys(properties).filter(
+      (propertyName) => !nullable.has(propertyName),
+    );
+  }
+
+  return spec;
+});
 
 export default defineConfig({
   search: {
@@ -23,14 +69,10 @@ export default defineConfig({
   },
   booking: {
     input: {
-      // Local copy of the BookingService v0.0.0-beta spec
-      // (https://github.com/zackspike/sales-module/releases/tag/v0.0.0-beta)
-      // with its nullability annotations fixed: the service generates every
-      // property as nullable because its OpenAPI setup ignores the C#
-      // nullability annotations.
-      // TODO(BookingService): restore the release download URL in Orval once
-      // the published spec respects nullability, and drop this file.
-      target: "./openapi/booking.json",
+      target: bookingSpec,
+      override: {
+        transformer: fixBookingNullability,
+      },
     },
     output: {
       target: "./api/booking.ts",

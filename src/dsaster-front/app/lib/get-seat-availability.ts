@@ -17,7 +17,18 @@ export interface Seat {
   readonly ticketId: string;
   readonly seatNumber: string;
   readonly status: SeatStatus;
+  /** Price of this seat in EUR, as returned by the (mocked) endpoint. */
+  readonly price: number;
 }
+
+/**
+ * The generated client still describes the old seat contract, which has no
+ * price. The mock returns it while the BookingService spec catches up.
+ * TODO(BookingService): use the generated `price` field once the spec includes it.
+ */
+type SeatAvailabilityWithPrice = SeatAvailabilityDto & {
+  readonly price?: number;
+};
 
 export type GetSeatAvailabilityResult =
   | { readonly status: "missing" | "error" }
@@ -44,11 +55,13 @@ export async function getSeatAvailability(
 }
 
 function toSeat(seat: SeatAvailabilityDto): Seat {
+  const seatWithPrice = seat as SeatAvailabilityWithPrice;
   return {
     ticketId: seat.ticketId,
     seatNumber: seat.seatNumber,
     // The spec types `status` as a plain string; cast it to the documented
     // enum values.
     status: seat.status as SeatStatus,
+    price: seatWithPrice.price ?? 0,
   };
 }
