@@ -148,12 +148,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/ReserveSeatRequest"
-                  }
-                ],
-                "description": "Body of POST /events/{eventId}/tickets/{ticketId}/reserve. The email identifies the buyer\r\nwho will hold the seat; the purchase must be made with the same email."
+                "$ref": "#/components/schemas/ReserveSeatRequest"
               }
             }
           },
@@ -234,12 +229,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "allOf": [
-                  {
-                    "$ref": "#/components/schemas/PurchaseTicketRequest"
-                  }
-                ],
-                "description": "Body of POST /events/{eventId}/tickets/{ticketId}/purchase. Both fields are required;\r\nif either is missing or blank the request is rejected with 400 Bad Request."
+                "$ref": "#/components/schemas/PurchaseTicketRequest"
               }
             }
           },
@@ -295,7 +285,6 @@
   "components": {
     "schemas": {
       "ErrorResponse": {
-        "required": ["message", "statusCode", "timestampUtc", "traceId"],
         "type": "object",
         "properties": {
           "statusCode": {
@@ -303,14 +292,16 @@
             "format": "int32"
           },
           "message": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "details": {
             "type": "string",
             "nullable": true
           },
           "traceId": {
-            "type": "string"
+            "type": "string",
+            "nullable": true
           },
           "timestampUtc": {
             "type": "string",
@@ -331,39 +322,40 @@
         "description": "Standardized JSON response payload for API errors."
       },
       "PurchaseTicketRequest": {
-        "required": ["email", "fullName"],
         "type": "object",
         "properties": {
           "fullName": {
             "type": "string",
-            "description": "Full name of the ticket purchaser (e.g., 'Jane Doe')."
+            "description": "Full name of the ticket purchaser (e.g., 'Jane Doe').",
+            "nullable": true
           },
           "email": {
             "type": "string",
-            "description": "Valid RFC 5321 email address for order confirmation (e.g., 'jane.doe@example.com')."
+            "description": "Valid RFC 5321 email address for order confirmation (e.g., 'jane.doe@example.com').",
+            "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Body of POST /events/{eventId}/tickets/{ticketId}/purchase. Both fields are required;\r\nif either is missing or blank the request is rejected with 400 Bad Request."
+        "description": "Body of POST /events/{eventId}/tickets/{ticketId}/purchase. Both fields are required;\nif either is missing or blank the request is rejected with 400 Bad Request."
       },
       "ReserveSeatRequest": {
-        "required": ["email", "fullName"],
         "type": "object",
         "properties": {
           "fullName": {
             "type": "string",
-            "description": "Full name of the buyer (e.g., 'Jane Doe')."
+            "description": "Full name of the buyer (e.g., 'Jane Doe').",
+            "nullable": true
           },
           "email": {
             "type": "string",
-            "description": "Email of the buyer; it must match the one used to purchase the seat."
+            "description": "Email of the buyer; it must match the one used to purchase the seat.",
+            "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Body of POST /events/{eventId}/tickets/{ticketId}/reserve. The email identifies the buyer\r\nwho will hold the seat; the purchase must be made with the same email."
+        "description": "Body of POST /events/{eventId}/tickets/{ticketId}/reserve. The email identifies the buyer\nwho will hold the seat; the purchase must be made with the same email."
       },
       "SeatAvailabilityDto": {
-        "required": ["seatNumber", "status", "ticketId"],
         "type": "object",
         "properties": {
           "ticketId": {
@@ -373,24 +365,19 @@
           },
           "seatNumber": {
             "type": "string",
-            "description": "Designated seat label within the event venue (e.g., 'A-1')."
+            "description": "Designated seat label within the event venue (e.g., 'A-1').",
+            "nullable": true
           },
           "status": {
             "type": "string",
-            "description": "Current availability status of the seat ('Available', 'Reserved' or 'Sold')."
+            "description": "Current availability status of the seat ('Available', 'Reserved' or 'Sold').",
+            "nullable": true
           }
         },
         "additionalProperties": false,
-        "description": "Unified DTO representing seat availability (SP-04 / ALIGN-02 / APP-01 / APP-02).\r\nMatches the agreed seat contract with Frontend: ticketId, seatNumber, and status."
+        "description": "Unified DTO representing seat availability (SP-04 / ALIGN-02 / APP-01 / APP-02).\nMatches the agreed seat contract with Frontend: ticketId, seatNumber, and status."
       },
       "SeatReservationResponse": {
-        "required": [
-          "email",
-          "eventId",
-          "expiresAtUtc",
-          "seatNumber",
-          "ticketId"
-        ],
         "type": "object",
         "properties": {
           "ticketId": {
@@ -405,11 +392,13 @@
           },
           "seatNumber": {
             "type": "string",
-            "description": "Designated seat number (e.g., 'A-1')."
+            "description": "Designated seat number (e.g., 'A-1').",
+            "nullable": true
           },
           "email": {
             "type": "string",
-            "description": "Email of the buyer holding the reservation."
+            "description": "Email of the buyer holding the reservation.",
+            "nullable": true
           },
           "expiresAtUtc": {
             "type": "string",
@@ -421,14 +410,6 @@
         "description": "Seat locked for a buyer until BookingService.Api.Contracts.SeatReservationResponse.ExpiresAtUtc."
       },
       "TicketResponse": {
-        "required": [
-          "email",
-          "eventId",
-          "fullName",
-          "seatNumber",
-          "ticketCode",
-          "ticketId"
-        ],
         "type": "object",
         "properties": {
           "ticketId": {
@@ -443,19 +424,23 @@
           },
           "seatNumber": {
             "type": "string",
-            "description": "Designated seat number (e.g., 'A-1')."
+            "description": "Designated seat number (e.g., 'A-1').",
+            "nullable": true
           },
           "fullName": {
             "type": "string",
-            "description": "Full name of the ticket holder."
+            "description": "Full name of the ticket holder.",
+            "nullable": true
           },
           "email": {
             "type": "string",
-            "description": "Email address associated with the purchase."
+            "description": "Email address associated with the purchase.",
+            "nullable": true
           },
           "ticketCode": {
             "type": "string",
-            "description": "Unique ticket validation code (format: 'TK-{GUID:N}')."
+            "description": "Unique ticket validation code (format: 'TK-{GUID:N}').",
+            "nullable": true
           },
           "purchasedAtUtc": {
             "type": "string",
